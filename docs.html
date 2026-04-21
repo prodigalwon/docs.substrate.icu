@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>docs.substrate.icu - Developer Documentation</title>
+  <meta name="description" content="Technical documentation for PNS2, ZK-PKI, Dotwave, and the substrate.icu ecosystem. Live on Paseo testnet." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    /* Strip Bootstrap font overrides */
+    *, *::before, *::after { font-family: inherit; }
+
+    :root {
+      --bg:        #f7f5f2;
+      --bg-2:      #f0ede8;
+      --surface:   #ffffff;
+      --border:    #e2ddd8;
+      --border-hi: #ccc8c2;
+      --text:      #5a5550;
+      --text-dim:  #9e9890;
+      --text-hi:   #1a1714;
+      --red:       #c41010;
+      --red-hi:    #a80d0d;
+      --red-lo:    rgba(196,16,16,.06);
+      --serif:     'Instrument Serif', Georgia, serif;
+      --sans:      'DM Sans', system-ui, sans-serif;
+      --mono:      'DM Mono', monospace;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans) !important;
+      font-size: 15px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3 { font-family: var(--serif) !important; }
+    h4, h5, h6, p, a, li, span, td, th, button, input { font-family: var(--sans) !important; }
+
+    /* ── Nav ── */
+    .site-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(247,245,242,.94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      height: 60px;
+      display: flex;
+      align-items: center;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-wordmark {
+      font-family: var(--sans) !important;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-hi);
+      letter-spacing: -.02em;
+    }
+    .nav-wordmark span { color: var(--red); }
+    .nav-wordmark .dim { color: var(--text-dim); font-weight: 400; }
+    .nav-link-item {
+      font-size: 13px;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color .12s;
+    }
+    .nav-link-item:hover { color: var(--text-hi); }
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 500;
+      color: #fff !important;
+      background: var(--red);
+      padding: 8px 20px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: background .15s;
+      white-space: nowrap;
+    }
+    .nav-cta:hover { background: var(--red-hi); }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 120px 0 72px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-eyebrow {
+      font-family: var(--mono) !important;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 400;
+      color: var(--text-hi);
+      line-height: 1.1;
+      letter-spacing: -.02em;
+      margin-bottom: 20px;
+    }
+    h1 em { font-style: italic; color: var(--red); }
+    .hero-sub {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.75;
+      max-width: 560px;
+      margin-bottom: 32px;
+    }
+    .wip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(217,119,6,.07);
+      border: 1px solid rgba(217,119,6,.2);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #92400e;
+    }
+    .wip-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #d97706;
+      flex-shrink: 0;
+    }
+
+    /* ── Sidebar + content layout ── */
+    .docs-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      border-right: 1px solid var(--border);
+      padding: 48px 0;
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
+    }
+    .sidebar-section {
+      margin-bottom: 32px;
+      padding: 0 24px;
+    }
+    .sidebar-heading {
+      font-family: var(--mono) !important;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      padding: 0 8px;
+    }
+    .sidebar-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar-list li a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text);
+      text-decoration: none;
+      padding: 5px 8px;
+      border-radius: 6px;
+      transition: background .1s, color .1s;
+      gap: 8px;
+    }
+    .sidebar-list li a:hover {
+      background: var(--bg-2);
+      color: var(--text-hi);
+    }
+    .sidebar-list li a.active {
+      background: var(--red-lo);
+      color: var(--red);
+      font-weight: 500;
+    }
+    .sidebar-list li a .soon {
+      font-family: var(--mono) !important;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .sidebar-sub {
+      list-style: none;
+      padding: 0 0 0 16px;
+      margin: 2px 0 4px;
+    }
+    .sidebar-sub li a {
+      font-size: 12px;
+      color: var(--text-dim);
+      padding: 3px 8px;
+    }
+    .sidebar-sub li a:hover { color: var(--text-hi); background: var(--bg-2); }
+
+    /* ── Main content ── */
+    .docs-main {
+      padding: 48px 56px 80px;
+      max-width: 820px;
+    }
+
+    /* ── Section cards ── */
+    .doc-section {
+      margin-bottom: 56px;
+    }
+    .section-label {
+      font-family: var(--mono) !important;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 400;
+      color: var(--text-hi);
+      letter-spacing: -.015em;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    h2 em { font-style: italic; }
+    .doc-lead {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.75;
+      margin-bottom: 24px;
+      max-width: 640px;
+    }
+
+    /* ── Doc cards grid ── */
+    .doc-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .doc-card {
+      background: var(--surface);
+      padding: 24px;
+      text-decoration: none;
+      transition: background .12s;
+      display: block;
+    }
+    .doc-card:hover { background: var(--bg); }
+    .doc-card.coming {
+      opacity: .5;
+      cursor: default;
+      pointer-events: none;
+    }
+    .doc-card-tag {
+      font-family: var(--mono) !important;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+    .doc-card h4 {
+      font-size: 14px !important;
+      font-weight: 600;
+      color: var(--text-hi);
+      margin-bottom: 6px;
+      letter-spacing: -.01em;
+    }
+    .doc-card p {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* ── Status table ── */
+    .status-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .status-table th {
+      font-family: var(--mono) !important;
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-align: left;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 500;
+    }
+    .status-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .status-table tr:last-child td { border-bottom: none; }
+    .status-table tr:hover td { background: var(--bg-2); }
+    .pill {
+      display: inline-block;
+      font-family: var(--mono) !important;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .05em;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+    .pill.testnet  { background: rgba(217,119,6,.08);  color: #92400e; border: 1px solid rgba(217,119,6,.2); }
+    .pill.soon     { background: var(--bg-2); color: var(--text-dim); border: 1px solid var(--border); }
+    .pill.research { background: var(--red-lo); color: var(--red); border: 1px solid rgba(196,16,16,.15); }
+
+    /* ── Callout ── */
+    .callout {
+      background: var(--bg-2);
+      border: 1px solid var(--border-hi);
+      border-left: 3px solid var(--red);
+      border-radius: 0 6px 6px 0;
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.7;
+      margin: 24px 0;
+    }
+    .callout strong { color: var(--text-hi); font-weight: 500; }
+    .callout a { color: var(--red); text-decoration: none; }
+    .callout a:hover { text-decoration: underline; }
+
+    /* ── Footer ── */
+    .site-footer {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+    .footer-brand span { color: var(--red); }
+    .footer-link {
+      font-size: 13px;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color .12s;
+    }
+    .footer-link:hover { color: var(--text-hi); }
+
+    /* ── Mobile ── */
+    .tree {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .tree > li {
+      border-bottom: 1px solid var(--border);
+    }
+    .tree > li:last-child { border-bottom: none; }
+    .tree-parent {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 20px;
+      background: var(--bg-2);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-hi);
+      letter-spacing: -.01em;
+    }
+    .tree-parent .pill { margin-left: 8px; }
+    .tree-children {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .tree-children li {
+      border-top: 1px solid var(--border);
+    }
+    .tree-children li a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px 10px 36px;
+      font-size: 13px;
+      color: var(--text);
+      text-decoration: none;
+      transition: background .1s, color .1s;
+      gap: 12px;
+    }
+    .tree-children li a:hover { background: var(--bg); color: var(--text-hi); }
+    .tree-children li a.coming { color: var(--text-dim); pointer-events: none; }
+    .tree-arrow { color: var(--text-dim); font-size: 11px; flex-shrink: 0; }
+
+    @media (max-width: 768px) {
+      .docs-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .docs-main { padding: 32px 0 60px; }
+      .doc-cards { grid-template-columns: 1fr; }
+      .hero { padding: 96px 0 56px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="site-nav">
+  <div class="container-xl">
+    <div class="d-flex align-items-center justify-content-between">
+      <a class="nav-brand" href="https://substrate.icu">
+        <svg width="24" height="24" viewBox="0 0 400 310" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <filter id="eg" x="-80%" y="-80%" width="360%" height="360%">
+              <feGaussianBlur stdDeviation="5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <ellipse cx="200" cy="57"  rx="34" ry="16" transform="rotate(0,   200, 57)"  fill="#8b0000"/>
+          <ellipse cx="311" cy="121" rx="34" ry="16" transform="rotate(60,  311, 121)" fill="#8b0000"/>
+          <ellipse cx="311" cy="249" rx="34" ry="16" transform="rotate(120, 311, 249)" fill="#8b0000"/>
+          <ellipse cx="89"  cy="249" rx="34" ry="16" transform="rotate(240, 89,  249)" fill="#8b0000"/>
+          <ellipse cx="89"  cy="121" rx="34" ry="16" transform="rotate(300, 89,  121)" fill="#8b0000"/>
+          <g transform="rotate(30, 200, 185)">
+            <ellipse cx="200" cy="105" rx="26" ry="12" transform="rotate(0,   200, 105)" fill="#d10000"/>
+            <ellipse cx="269" cy="145" rx="26" ry="12" transform="rotate(60,  269, 145)" fill="#d10000"/>
+            <ellipse cx="269" cy="225" rx="26" ry="12" transform="rotate(120, 269, 225)" fill="#d10000"/>
+            <ellipse cx="200" cy="265" rx="26" ry="12" transform="rotate(180, 200, 265)" fill="#d10000"/>
+            <ellipse cx="131" cy="225" rx="26" ry="12" transform="rotate(240, 131, 225)" fill="#d10000"/>
+            <ellipse cx="131" cy="145" rx="26" ry="12" transform="rotate(300, 131, 145)" fill="#d10000"/>
+          </g>
+          <ellipse cx="233" cy="204" rx="18" ry="9" transform="rotate(120, 233, 204)" fill="#5a0000"/>
+          <ellipse cx="200" cy="223" rx="18" ry="9" transform="rotate(180, 200, 223)" fill="#5a0000"/>
+          <ellipse cx="167" cy="204" rx="18" ry="9" transform="rotate(240, 167, 204)" fill="#5a0000"/>
+          <ellipse cx="200" cy="147" rx="18" ry="9" transform="rotate(0,   200, 147)" fill="#cc1111" filter="url(#eg)"/>
+          <ellipse cx="233" cy="166" rx="18" ry="9" transform="rotate(60,  233, 166)" fill="#cc1111" filter="url(#eg)"/>
+          <ellipse cx="167" cy="166" rx="18" ry="9" transform="rotate(300, 167, 166)" fill="#cc1111" filter="url(#eg)"/>
+          <ellipse cx="200" cy="147" rx="18" ry="9" transform="rotate(0,   200, 147)" fill="#8b0000"/>
+          <ellipse cx="233" cy="166" rx="18" ry="9" transform="rotate(60,  233, 166)" fill="#8b0000"/>
+          <ellipse cx="167" cy="166" rx="18" ry="9" transform="rotate(300, 167, 166)" fill="#8b0000"/>
+        </svg>
+        <span class="nav-wordmark"><span>substrate</span>.icu <span class="dim">/ docs</span></span>
+      </a>
+      <div class="d-flex align-items-center gap-3">
+        <a class="nav-link-item d-none d-md-inline" href="https://substrate.icu">substrate.icu</a>
+        <a class="nav-link-item d-none d-md-inline" href="https://github.com/prodigalwon" target="_blank" rel="noopener">GitHub</a>
+        <a class="nav-cta" href="mailto:apollonius21@proton.me">Get early access</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" style="border-bottom: 1px solid var(--border);">
+  <div class="container-xl">
+    <div class="hero-eyebrow">Technical Documentation</div>
+    <h1>Build on <em>substrate.icu</em></h1>
+    <p class="hero-sub">Developer reference for the substrate.icu ecosystem — a suite of infrastructure, tooling, and applications built as Substrate FRAME pallets, deploying to Polkadot.</p>
+    <span class="wip-badge">Documentation in progress - Paseo testnet</span>
+  </div>
+</section>
+
+<!-- Docs layout -->
+<div class="container-xl">
+  <div class="docs-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Getting Started</div>
+        <ul class="sidebar-list">
+          <li><a href="#intro" class="active">Introduction</a></li>
+          <li><a href="#architecture">Architecture overview</a></li>
+          <li><a href="#testnet">Paseo testnet</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">PNS2</div>
+        <ul class="sidebar-list">
+          <li><a href="#pns2">Overview</a></li>
+          <ul class="sidebar-sub">
+            <li><a href="#">Name resolution <span class="soon">soon</span></a></li>
+            <li><a href="#">Record types <span class="soon">soon</span></a></li>
+            <li><a href="#">Expiry & the janitor <span class="soon">soon</span></a></li>
+            <li><a href="#">The Snorkel <span class="soon">soon</span></a></li>
+            <li><a href="#">Extrinsics <span class="soon">soon</span></a></li>
+          </ul>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">ZK-PKI</div>
+        <ul class="sidebar-list">
+          <li><a href="#zkpki">Overview</a></li>
+          <ul class="sidebar-sub">
+            <li><a href="#">The ceremony <span class="soon">soon</span></a></li>
+            <li><a href="#">Attestation tiers <span class="soon">soon</span></a></li>
+            <li><a href="#">Trust chains & issuers <span class="soon">soon</span></a></li>
+            <li><a href="#">Extrinsics <span class="soon">soon</span></a></li>
+          </ul>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Dotwave</div>
+        <ul class="sidebar-list">
+          <li><a href="#dotwave">Overview</a></li>
+          <ul class="sidebar-sub">
+            <li><a href="#">Android StrongBox <span class="soon">soon</span></a></li>
+            <li><a href="#">Integration guide <span class="soon">soon</span></a></li>
+            <li><a href="#">Secret Squirrel <span class="soon">soon</span></a></li>
+          </ul>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Reference</div>
+        <ul class="sidebar-list">
+          <li><a href="#reserved">Reserved names</a></li>
+          <li><a href="#">Storage layout <span class="soon">soon</span></a></li>
+          <li><a href="#">Error codes <span class="soon">soon</span></a></li>
+          <li><a href="#patent">Patent & IP</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="docs-main">
+
+      <!-- Intro -->
+      <div class="doc-section" id="intro">
+        <div class="section-label">Getting Started</div>
+        <h2>Introduction</h2>
+        <p class="doc-lead">substrate.icu is a suite of Substrate FRAME pallets for the Polkadot ecosystem. Three protocols are live on Paseo testnet.</p>
+
+        <table class="status-table">
+          <thead>
+            <tr>
+              <th>Protocol</th>
+              <th>Description</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600;color:var(--text-hi);">PNS2</td>
+              <td>Blockchain-native name service. Human-readable names resolving to wallet addresses and DNS records.</td>
+              <td><span class="pill testnet">Paseo Testnet</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:var(--text-hi);">ZK-PKI</td>
+              <td>Hardware-anchored public key infrastructure. Tier 1: TPM 2.0 (gold standard, full PoP). Tier 2: Android StrongBox (full PoP). Tier 3: Apple Secure Enclave (machine identity only, no PoP cert).</td>
+              <td><span class="pill testnet">Paseo Testnet</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:var(--text-hi);">Dotwave</td>
+              <td>The everything app. Multi-platform, written in Rust. Your gateway into the substrate.icu ecosystem — ZK-PKI ceremony, Secret Squirrel, and more coming.</td>
+              <td><span class="pill testnet">Paseo Testnet</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:var(--text-hi);">Secret Squirrel</td>
+              <td>Dead drop messaging built into Dotwave. Deniable communication between verified identities.</td>
+              <td><span class="pill testnet">Paseo Testnet</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          Both PNS2 and ZK-PKI have completed a full Fagan inspection with 226 tests passing. Live on Paseo. Questions? <a href="mailto:apollonius21@proton.me">apollonius21@proton.me</a> or find <a href="https://forum.polkadot.network" target="_blank" rel="noopener">prodigalwon on the Polkadot Forum</a>.
+        </div>
+      </div>
+
+      <!-- Architecture -->
+      <div class="doc-section" id="architecture">
+        <div class="section-label">Getting Started</div>
+        <h2>Architecture overview</h2>
+        <p class="doc-lead">PNS2 and ZK-PKI are independent FRAME pallets that integrate cleanly. Neither requires the other.</p>
+
+        <ul class="tree">
+          <li>
+            <div class="tree-parent">PNS2 <span class="pill testnet">Paseo Testnet</span></div>
+            <ul class="tree-children">
+              <li><a href="#pns2">Overview</a></li>
+              <li><a class="coming" href="#">Name resolution <span class="pill soon">Soon</span></a></li>
+              <li><a class="coming" href="#">Record types <span class="pill soon">Soon</span></a></li>
+              <li><a class="coming" href="#">Expiry &amp; the janitor <span class="pill soon">Soon</span></a></li>
+              <li><a class="coming" href="#">The Snorkel <span class="pill soon">Soon</span></a></li>
+              <li><a class="coming" href="#">Extrinsics reference <span class="pill soon">Soon</span></a></li>
+            </ul>
+          </li>
+          <li>
+            <div class="tree-parent">ZK-PKI <span class="pill testnet">Paseo Testnet</span></div>
+            <ul class="tree-children">
+              <li><a href="#zkpki">Overview</a></li>
+              <li><a class="coming" href="#">The ceremony <span class="pill soon">Soon</span></a></li>
+              <li><a class="coming" href="#">Attestation tiers <span class="pill soon">Soon</span></a></li>
+              <li><a class="coming" href="#">Trust chains &amp; issuers <span class="pill soon">Soon</span></a></li>
+              <li><a class="coming" href="#">Extrinsics reference <span class="pill soon">Soon</span></a></li>
+            </ul>
+          </li>
+          <li>
+            <div class="tree-parent">Dotwave <span class="pill testnet">Paseo Testnet</span></div>
+            <ul class="tree-children">
+              <li><a href="#dotwave">Overview</a></li>
+              <li><a class="coming" href="#">Android StrongBox <span class="pill soon">Soon</span></a></li>
+              <li><a class="coming" href="#">Integration guide <span class="pill soon">Soon</span></a></li>
+              <li><a class="coming" href="#">Secret Squirrel <span class="pill testnet">Paseo Testnet</span></a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Testnet -->
+      <div class="doc-section" id="testnet">
+        <div class="section-label">Getting Started</div>
+        <h2>Paseo testnet</h2>
+        <p class="doc-lead">All protocols are live on Paseo, Polkadot's public testnet. Paseo is the path to mainnet.</p>
+        <table class="status-table">
+          <thead><tr><th>Detail</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--text-dim);font-size:12px;font-family:var(--mono);">NETWORK</td><td>Paseo</td></tr>
+            <tr><td style="color:var(--text-dim);font-size:12px;font-family:var(--mono);">ROOT DOMAIN</td><td style="font-family:var(--mono);font-size:13px;">*.paseo.substrate.icu</td></tr>
+            <tr><td style="color:var(--text-dim);font-size:12px;font-family:var(--mono);">RPC</td><td style="font-family:var(--mono);font-size:13px;">wss://rpc.substrate.icu</td></tr>
+            <tr><td style="color:var(--text-dim);font-size:12px;font-family:var(--mono);">TEST SUITE</td><td>226 passing. Full regression tested, hardened, and benchmarked. Fagan inspection complete. (Paseo testnet)</td></tr>
+            <tr><td style="color:var(--text-dim);font-size:12px;font-family:var(--mono);">TARGET</td><td>Polkadot mainnet parachain</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PNS2 -->
+      <div class="doc-section" id="pns2">
+        <div class="section-label">PNS2</div>
+        <h2>Polkadot Name Service 2</h2>
+        <p class="doc-lead">PNS2 is a blockchain-native DNS replacement built as a Substrate FRAME pallet. Names resolve to wallet addresses and standard DNS records. substrate.icu is the root domain.</p>
+        <p class="doc-lead">Bring your own gateway. Point your PNS2 name at an IPFS gateway, a GitHub Pages site, or any web content you control. Because resolution goes through the Snorkel — real DNS, not a proxy — your name gets a legitimate DNS record, which means a legitimate TLS certificate. No workarounds. <a href="mailto:apollonius21@proton.me" style="color:var(--red);text-decoration:none;font-weight:500;">Reach out to get your gateway TLS cert set up.</a></p>
+        <ul class="tree">
+          <li><a class="coming tree-parent" href="#" style="font-weight:400;background:var(--surface);">Name resolution <span class="pill soon">Soon</span></a></li>
+          <li><a class="coming tree-parent" href="#" style="font-weight:400;background:var(--surface);">Record types <span class="pill soon">Soon</span></a></li>
+          <li><a class="coming tree-parent" href="#" style="font-weight:400;background:var(--surface);">Expiry &amp; the janitor <span class="pill soon">Soon</span></a></li>
+          <li><a class="coming tree-parent" href="#" style="font-weight:400;background:var(--surface);">Extrinsics reference <span class="pill soon">Soon</span></a></li>
+        </ul>
+      </div>
+
+      <!-- ZK-PKI -->
+      <div class="doc-section" id="zkpki">
+        <div class="section-label">ZK-PKI</div>
+        <h2>Zero-Knowledge Public Key Infrastructure</h2>
+        <p class="doc-lead">ZK-PKI is a hardware-anchored identity system built as a Substrate FRAME pallet. Identity certificates are minted as NFTs, anchored to the hardware security chip in the user's device. One certificate is issued per hardware root per issuer. Proof of personhood is only enforced when the issuer performs KYC — without it, a user with multiple devices can hold multiple certificates. The KYC step is off-chain, issuer-driven, and not required by the protocol.</p>
+        <ul class="tree">
+          <li><a class="coming tree-parent" href="#" style="font-weight:400;background:var(--surface);">The ceremony <span class="pill soon">Soon</span></a></li>
+          <li><a class="coming tree-parent" href="#" style="font-weight:400;background:var(--surface);">Attestation tiers <span class="pill soon">Soon</span></a></li>
+          <li><a class="coming tree-parent" href="#" style="font-weight:400;background:var(--surface);">Trust chains &amp; issuers <span class="pill soon">Soon</span></a></li>
+          <li><a class="coming tree-parent" href="#" style="font-weight:400;background:var(--surface);">Extrinsics reference <span class="pill soon">Soon</span></a></li>
+        </ul>
+      </div>
+
+      <!-- Dotwave -->
+      <div class="doc-section" id="dotwave">
+        <div class="section-label">Dotwave</div>
+        <h2>Dotwave</h2>
+        <p class="doc-lead">Dotwave is the everything app for the substrate.icu ecosystem. Written in Rust, multi-platform, and your gateway into the testnet. It handles the ZK-PKI ceremony via Android StrongBox, hosts Secret Squirrel, and is the launchpad for a growing suite of apps, games, and features. If substrate.icu is the highway, Dotwave is the on-ramp.</p>
+        <ul class="tree">
+          <li><a class="coming tree-parent" href="#" style="font-weight:400;background:var(--surface);">Android StrongBox <span class="pill soon">Soon</span></a></li>
+          <li><a class="coming tree-parent" href="#" style="font-weight:400;background:var(--surface);">Integration guide <span class="pill soon">Soon</span></a></li>
+          <li>
+            <div class="tree-parent" style="font-weight:400;">Secret Squirrel <span class="pill testnet">Paseo Testnet</span></div>
+            <ul class="tree-children">
+              <li><a class="coming" href="#">Overview <span class="pill soon">Soon</span></a></li>
+              <li><a class="coming" href="#">Dead drop architecture <span class="pill soon">Soon</span></a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Reserved names -->
+      <div class="doc-section" id="reserved">
+        <div class="section-label">Reference</div>
+        <h2>Reserved names</h2>
+        <p class="doc-lead">The following names are reserved at the pallet level and cannot be registered by users on any substrate.icu network.</p>
+        <table class="status-table">
+          <thead><tr><th>Name</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td style="font-family:var(--mono);font-size:13px;">www</td><td>System infrastructure</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">docs</td><td>System infrastructure</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">api</td><td>System infrastructure</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">rpc</td><td>System infrastructure</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">status</td><td>System infrastructure</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">admin</td><td>System infrastructure</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">faucet</td><td>System infrastructure</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">node</td><td>System infrastructure</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">gateway</td><td>System infrastructure</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">resolver</td><td>System infrastructure</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">dotwave</td><td>dotwave product</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">snorkel</td><td>Snorkel DNS bridge</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">zkpki</td><td>ZK-PKI protocol</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">zk-pki</td><td>ZK-PKI protocol</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">pns</td><td>PNS2 protocol</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">pns2</td><td>PNS2 protocol</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">registry</td><td>PNS2 protocol</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">explorer</td><td>Future product</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">substrate</td><td>Brand protection</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">polkadot</td><td>Brand protection</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">kusama</td><td>Brand protection</td></tr>
+            <tr><td style="font-family:var(--mono);font-size:13px;">paseo</td><td>Brand protection</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Patent -->
+      <div class="doc-section" id="patent">
+        <div class="section-label">Reference</div>
+        <h2>Patent & IP</h2>
+        <p class="doc-lead">The ZK-PKI system is patent pending.</p>
+        <table class="status-table">
+          <thead><tr><th>Detail</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--text-dim);font-size:12px;font-family:var(--mono);">APPLICATION</td><td style="font-family:var(--mono);font-size:13px;">US Provisional 64/043,754</td></tr>
+            <tr><td style="color:var(--text-dim);font-size:12px;font-family:var(--mono);">FILED</td><td>April 19, 2026</td></tr>
+            <tr><td style="color:var(--text-dim);font-size:12px;font-family:var(--mono);">STATUS</td><td>Patent Pending</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="container-xl">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div class="footer-brand">
+        <svg width="16" height="16" viewBox="0 0 400 310" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <ellipse cx="200" cy="57"  rx="34" ry="16" transform="rotate(0,   200, 57)"  fill="#8b0000"/>
+          <ellipse cx="311" cy="121" rx="34" ry="16" transform="rotate(60,  311, 121)" fill="#8b0000"/>
+          <ellipse cx="311" cy="249" rx="34" ry="16" transform="rotate(120, 311, 249)" fill="#8b0000"/>
+          <ellipse cx="89"  cy="249" rx="34" ry="16" transform="rotate(240, 89,  249)" fill="#8b0000"/>
+          <ellipse cx="89"  cy="121" rx="34" ry="16" transform="rotate(300, 89,  121)" fill="#8b0000"/>
+          <g transform="rotate(30, 200, 185)">
+            <ellipse cx="200" cy="105" rx="26" ry="12" transform="rotate(0,   200, 105)" fill="#d10000"/>
+            <ellipse cx="269" cy="145" rx="26" ry="12" transform="rotate(60,  269, 145)" fill="#d10000"/>
+            <ellipse cx="200" cy="265" rx="26" ry="12" transform="rotate(180, 200, 265)" fill="#d10000"/>
+            <ellipse cx="131" cy="145" rx="26" ry="12" transform="rotate(300, 131, 145)" fill="#d10000"/>
+          </g>
+          <ellipse cx="200" cy="147" rx="18" ry="9" transform="rotate(0,   200, 147)" fill="#8b0000"/>
+          <ellipse cx="233" cy="166" rx="18" ry="9" transform="rotate(60,  233, 166)" fill="#8b0000"/>
+          <ellipse cx="167" cy="166" rx="18" ry="9" transform="rotate(300, 167, 166)" fill="#8b0000"/>
+        </svg>
+        <span>substrate</span>.icu / docs
+      </div>
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <a class="footer-link" href="https://substrate.icu">substrate.icu</a>
+        <a class="footer-link" href="https://github.com/prodigalwon" target="_blank" rel="noopener">GitHub</a>
+        <a class="footer-link" href="mailto:apollonius21@proton.me">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
