@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZK-PKI Technical Specification — docs.substrate.icu</title>
-  <meta name="description" content="ZK-PKI: Blockchain-Native Public Key Infrastructure. Technical Specification for Polkadot Technical Fellowship Review." />
+  <title>ZK-PKI — docs.substrate.icu</title>
+  <meta name="description" content="ZK-PKI: hardware-anchored identity on Polkadot. How the ceremony works, attestation tiers, trust chains, KYC, and proof of personhood." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     *, *::before, *::after { font-family: inherit; }
- 
+
     :root {
       --bg:        #f7f5f2;
       --bg-2:      #f0ede8;
@@ -28,7 +28,7 @@
       --sans:      'DM Sans', system-ui, sans-serif;
       --mono:      'DM Mono', monospace;
     }
- 
+
     html, body {
       background: var(--bg);
       color: var(--text);
@@ -38,11 +38,11 @@
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
- 
+
     h1, h2, h3 { font-family: var(--serif) !important; }
-    h4, h5, h6, p, a, li, span, td, th, button, input, code, pre { font-family: var(--sans) !important; }
-    code, pre, .mono { font-family: var(--mono) !important; }
- 
+    h4, h5, h6, p, a, li, span, td, th, button, input { font-family: var(--sans) !important; }
+    code, pre { font-family: var(--mono) !important; }
+
     /* Nav */
     .site-nav {
       position: fixed;
@@ -63,7 +63,7 @@
     .nav-link-item:hover { color: var(--text-hi); }
     .nav-cta { font-size: 13px; font-weight: 500; color: #fff !important; background: var(--red); padding: 8px 20px; border-radius: 100px; text-decoration: none; transition: background .15s; white-space: nowrap; }
     .nav-cta:hover { background: var(--red-hi); }
- 
+
     /* Layout */
     .docs-layout {
       display: grid;
@@ -71,7 +71,7 @@
       min-height: calc(100vh - 60px);
       margin-top: 60px;
     }
- 
+
     /* Sidebar */
     .sidebar {
       border-right: 1px solid var(--border);
@@ -84,85 +84,172 @@
     .sidebar-section { margin-bottom: 24px; padding: 0 20px; }
     .sidebar-heading { font-family: var(--mono) !important; font-size: 10px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; padding: 0 8px; }
     .sidebar-list { list-style: none; padding: 0; margin: 0; }
-    .sidebar-list li a { display: block; font-size: 12px; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 4px; transition: background .1s, color .1s; line-height: 1.5; }
+    .sidebar-list li a { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 4px; transition: background .1s, color .1s; line-height: 1.5; gap: 6px; }
     .sidebar-list li a:hover { background: var(--bg-2); color: var(--text-hi); }
     .sidebar-list li a.active { background: var(--red-lo); color: var(--red); font-weight: 500; }
- 
+    .soon { font-family: var(--mono) !important; font-size: 9px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--text-dim); background: var(--bg-2); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; flex-shrink: 0; }
+
     /* Main */
-    .docs-main { padding: 48px 56px 100px; max-width: 900px; }
- 
-    /* Spec header */
-    .spec-header {
-      padding-bottom: 40px;
-      margin-bottom: 48px;
-      border-bottom: 1px solid var(--border);
-    }
-    .spec-eyebrow { font-family: var(--mono) !important; font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
-    h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 400; color: var(--text-hi); line-height: 1.1; letter-spacing: -.02em; margin-bottom: 8px; }
+    .docs-main { padding: 48px 56px 100px; max-width: 860px; }
+
+    /* Page header */
+    .page-header { padding-bottom: 36px; margin-bottom: 48px; border-bottom: 1px solid var(--border); }
+    .page-eyebrow { font-family: var(--mono) !important; font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+    h1 { font-size: clamp(30px, 4.5vw, 44px); font-weight: 400; color: var(--text-hi); line-height: 1.1; letter-spacing: -.02em; margin-bottom: 16px; }
     h1 em { font-style: italic; color: var(--red); }
-    .spec-subtitle { font-size: 16px; font-weight: 300; color: var(--text-dim); margin-bottom: 28px; }
- 
-    /* Meta table */
-    .meta-table { width: auto; border-collapse: collapse; font-size: 13px; }
-    .meta-table td { padding: 7px 16px 7px 0; vertical-align: top; }
-    .meta-table td:first-child { font-family: var(--mono) !important; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-dim); white-space: nowrap; padding-right: 24px; }
-    .meta-table td:last-child { color: var(--text-hi); font-weight: 500; }
- 
+    .page-lead { font-size: 16px; font-weight: 300; color: var(--text); line-height: 1.78; max-width: 640px; margin-bottom: 24px; }
+
+    /* Quick links */
+    .quick-links { display: flex; gap: 10px; flex-wrap: wrap; }
+    .quick-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border-hi);
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color .12s, color .12s;
+    }
+    .quick-link:hover { border-color: var(--red); color: var(--red); }
+    .quick-link.primary { background: var(--red); color: #fff; border-color: var(--red); }
+    .quick-link.primary:hover { background: var(--red-hi); color: #fff; }
+
     /* Sections */
-    .spec-section { margin-bottom: 56px; }
-    .section-num { font-family: var(--mono) !important; font-size: 11px; font-weight: 500; letter-spacing: .08em; color: var(--red); margin-bottom: 6px; }
-    h2 { font-size: clamp(20px, 3vw, 28px); font-weight: 400; color: var(--text-hi); letter-spacing: -.015em; line-height: 1.2; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-    h3 { font-size: 17px; font-weight: 400; color: var(--text-hi); letter-spacing: -.01em; margin: 28px 0 12px; }
-    p { font-size: 14px; color: var(--text); line-height: 1.78; margin-bottom: 14px; max-width: 720px; }
+    .doc-section { margin-bottom: 60px; }
+    .section-anchor { display: block; height: 60px; margin-top: -60px; visibility: hidden; }
+    h2 { font-size: clamp(20px, 3vw, 27px); font-weight: 400; color: var(--text-hi); letter-spacing: -.015em; line-height: 1.2; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 16px; font-weight: 600; color: var(--text-hi); letter-spacing: -.01em; margin: 28px 0 10px; font-family: var(--sans) !important; }
+    p { font-size: 14px; color: var(--text); line-height: 1.8; margin-bottom: 14px; max-width: 680px; }
     p:last-child { margin-bottom: 0; }
- 
-    /* Spec tables */
-    .spec-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0 24px; }
-    .spec-table thead tr { background: var(--bg-2); }
-    .spec-table th { font-family: var(--mono) !important; font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); text-align: left; padding: 10px 14px; border-bottom: 2px solid var(--border); white-space: nowrap; }
-    .spec-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
-    .spec-table tr:last-child td { border-bottom: none; }
-    .spec-table tr:hover td { background: rgba(0,0,0,.015); }
-    .spec-table td:first-child { font-family: var(--mono) !important; font-size: 12px; color: var(--text-hi); white-space: nowrap; }
-    .spec-table td code { font-family: var(--mono) !important; font-size: 11px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; color: var(--text-hi); white-space: nowrap; }
- 
-    /* Inline code */
-    code { font-family: var(--mono) !important; font-size: .82em; background: var(--bg-2); border: 1px solid var(--border-hi); border-radius: 3px; padding: 1px 6px; color: var(--text-hi); }
- 
-    /* Callout */
-    .callout { background: var(--bg-2); border: 1px solid var(--border-hi); border-left: 3px solid var(--red); border-radius: 0 6px 6px 0; padding: 14px 18px; font-size: 13px; font-weight: 300; color: var(--text); line-height: 1.7; margin: 16px 0; }
+    p strong { color: var(--text-hi); font-weight: 500; }
+
+    /* Callouts */
+    .callout { background: var(--bg-2); border: 1px solid var(--border-hi); border-left: 3px solid var(--red); border-radius: 0 6px 6px 0; padding: 14px 18px; font-size: 13px; font-weight: 300; color: var(--text); line-height: 1.7; margin: 20px 0; max-width: 680px; }
     .callout strong { color: var(--text-hi); font-weight: 500; }
     .callout.warn { border-left-color: #d97706; background: rgba(217,119,6,.04); }
- 
-    /* Pills */
-    .pill { display: inline-block; font-family: var(--mono) !important; font-size: 10px; font-weight: 500; letter-spacing: .05em; padding: 2px 8px; border-radius: 100px; }
-    .pill.yes { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
-    .pill.no { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
-    .pill.live { background: rgba(217,119,6,.08); color: #92400e; border: 1px solid rgba(217,119,6,.2); }
-    .pill.pending { background: var(--bg-2); color: var(--text-dim); border: 1px solid var(--border); }
- 
-    /* Lists */
-    .spec-list { list-style: none; padding: 0; margin: 12px 0; }
-    .spec-list li { font-size: 14px; color: var(--text); padding: 6px 0 6px 16px; border-bottom: 1px solid var(--border); position: relative; line-height: 1.65; }
-    .spec-list li:last-child { border-bottom: none; }
-    .spec-list li::before { content: '—'; position: absolute; left: 0; color: var(--text-dim); font-size: 12px; }
- 
+    .callout.info { border-left-color: #2563eb; background: rgba(37,99,235,.04); }
+
+    /* Code */
+    code { font-family: var(--mono) !important; font-size: .82em; background: var(--bg-2); border: 1px solid var(--border-hi); border-radius: 3px; padding: 1px 6px; color: var(--text-hi); }
+
+    /* Step list */
+    .steps { list-style: none; padding: 0; margin: 16px 0; max-width: 680px; }
+    .steps li {
+      display: flex;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .steps li:last-child { border-bottom: none; }
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-hi);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600;
+      color: var(--text-dim);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .step-body h4 { font-size: 13px; font-weight: 600; color: var(--text-hi); margin-bottom: 4px; font-family: var(--sans) !important; }
+    .step-body p { font-size: 13px; margin: 0; }
+
+    /* Tier cards */
+    .tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 16px 0; max-width: 680px; }
+    .tier-card { background: var(--surface); padding: 24px 20px; }
+    .tier-badge { font-family: var(--mono) !important; font-size: 10px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+    .tier-badge.t1 { color: var(--text-hi); }
+    .tier-badge.t2 { color: #555; }
+    .tier-badge.t3 { color: var(--text-dim); }
+    .tier-card h4 { font-size: 13px; font-weight: 600; color: var(--text-hi); margin-bottom: 6px; font-family: var(--sans) !important; }
+    .tier-card p { font-size: 12px; color: var(--text); line-height: 1.65; margin-bottom: 8px; }
+    .tier-card .examples { font-size: 11px; color: var(--text-dim); font-style: italic; margin: 0; }
+    .pop-pill { display: inline-block; font-family: var(--mono) !important; font-size: 9px; font-weight: 600; letter-spacing: .05em; padding: 2px 7px; border-radius: 100px; margin-top: 8px; }
+    .pop-pill.yes { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .pop-pill.no { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
+    /* Spec table */
+    .spec-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; max-width: 680px; }
+    .spec-table thead tr { background: var(--bg-2); }
+    .spec-table th { font-family: var(--mono) !important; font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); text-align: left; padding: 9px 14px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+    .spec-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+    .spec-table tr:last-child td { border-bottom: none; }
+    .spec-table tr:hover td { background: rgba(0,0,0,.012); }
+    .spec-table td:first-child { font-weight: 500; color: var(--text-hi); }
+
+    /* Extrinsic list */
+    .extrin-list { list-style: none; padding: 0; margin: 16px 0; max-width: 680px; }
+    .extrin-list li { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; display: flex; gap: 12px; align-items: baseline; }
+    .extrin-list li:last-child { border-bottom: none; }
+    .extrin-list li code { flex-shrink: 0; }
+
+    /* Footer links */
+    .doc-links { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; max-width: 680px; }
+    .doc-link-card { display: block; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; text-decoration: none; transition: border-color .12s; }
+    .doc-link-card:hover { border-color: var(--red); }
+    .doc-link-card .tag { font-family: var(--mono) !important; font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+    .doc-link-card h4 { font-size: 14px; font-weight: 600; color: var(--text-hi); margin-bottom: 4px; font-family: var(--sans) !important; }
+    .doc-link-card p { font-size: 12px; color: var(--text-dim); margin: 0; }
+
     /* Footer */
     .site-footer { background: var(--bg-2); border-top: 1px solid var(--border); padding: 28px 0; }
     .footer-brand { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-dim); }
     .footer-brand span { color: var(--red); }
     .footer-link { font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color .12s; }
     .footer-link:hover { color: var(--text-hi); }
- 
+
+    .npm-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--text-hi);
+      border-radius: 8px;
+      padding: 14px 18px;
+      gap: 16px;
+      max-width: 360px;
+    }
+    .npm-cmd {
+      font-family: var(--mono) !important;
+      font-size: 13px;
+      color: #f0ede8;
+      letter-spacing: .01em;
+      white-space: nowrap;
+    }
+    .npm-cmd span { color: #9e9890; }
+    .copy-btn {
+      background: none;
+      border: 1px solid #333;
+      border-radius: 5px;
+      padding: 5px 8px;
+      cursor: pointer;
+      color: #9e9890;
+      transition: border-color .12s, color .12s;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--sans) !important;
+      font-size: 11px;
+    }
+    .copy-btn:hover { border-color: #666; color: #f0ede8; }
+    .copy-btn.copied { border-color: #2ea86a; color: #2ea86a; }
+
     @media (max-width: 768px) {
       .docs-layout { grid-template-columns: 1fr; }
       .sidebar { display: none; }
       .docs-main { padding: 32px 20px 80px; }
+      .tier-grid { grid-template-columns: 1fr; }
+      .doc-links { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
- 
+
 <!-- Nav -->
 <nav class="site-nav">
   <div class="container-xl">
@@ -170,28 +257,28 @@
       <a class="nav-brand" href="https://docs.substrate.icu">
         <svg width="24" height="24" viewBox="0 0 400 310" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs><filter id="eg" x="-80%" y="-80%" width="360%" height="360%"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-          <ellipse cx="200" cy="57"  rx="34" ry="16" transform="rotate(0,   200, 57)"  fill="#8b0000"/>
-          <ellipse cx="311" cy="121" rx="34" ry="16" transform="rotate(60,  311, 121)" fill="#8b0000"/>
-          <ellipse cx="311" cy="249" rx="34" ry="16" transform="rotate(120, 311, 249)" fill="#8b0000"/>
-          <ellipse cx="89"  cy="249" rx="34" ry="16" transform="rotate(240, 89,  249)" fill="#8b0000"/>
-          <ellipse cx="89"  cy="121" rx="34" ry="16" transform="rotate(300, 89,  121)" fill="#8b0000"/>
-          <g transform="rotate(30, 200, 185)">
-            <ellipse cx="200" cy="105" rx="26" ry="12" transform="rotate(0,   200, 105)" fill="#d10000"/>
-            <ellipse cx="269" cy="145" rx="26" ry="12" transform="rotate(60,  269, 145)" fill="#d10000"/>
-            <ellipse cx="269" cy="225" rx="26" ry="12" transform="rotate(120, 269, 225)" fill="#d10000"/>
-            <ellipse cx="200" cy="265" rx="26" ry="12" transform="rotate(180, 200, 265)" fill="#d10000"/>
-            <ellipse cx="131" cy="225" rx="26" ry="12" transform="rotate(240, 131, 225)" fill="#d10000"/>
-            <ellipse cx="131" cy="145" rx="26" ry="12" transform="rotate(300, 131, 145)" fill="#d10000"/>
+          <ellipse cx="200" cy="57"  rx="34" ry="16" transform="rotate(0,200,57)"   fill="#8b0000"/>
+          <ellipse cx="311" cy="121" rx="34" ry="16" transform="rotate(60,311,121)" fill="#8b0000"/>
+          <ellipse cx="311" cy="249" rx="34" ry="16" transform="rotate(120,311,249)" fill="#8b0000"/>
+          <ellipse cx="89"  cy="249" rx="34" ry="16" transform="rotate(240,89,249)" fill="#8b0000"/>
+          <ellipse cx="89"  cy="121" rx="34" ry="16" transform="rotate(300,89,121)" fill="#8b0000"/>
+          <g transform="rotate(30,200,185)">
+            <ellipse cx="200" cy="105" rx="26" ry="12" transform="rotate(0,200,105)"   fill="#d10000"/>
+            <ellipse cx="269" cy="145" rx="26" ry="12" transform="rotate(60,269,145)"  fill="#d10000"/>
+            <ellipse cx="269" cy="225" rx="26" ry="12" transform="rotate(120,269,225)" fill="#d10000"/>
+            <ellipse cx="200" cy="265" rx="26" ry="12" transform="rotate(180,200,265)" fill="#d10000"/>
+            <ellipse cx="131" cy="225" rx="26" ry="12" transform="rotate(240,131,225)" fill="#d10000"/>
+            <ellipse cx="131" cy="145" rx="26" ry="12" transform="rotate(300,131,145)" fill="#d10000"/>
           </g>
-          <ellipse cx="233" cy="204" rx="18" ry="9" transform="rotate(120, 233, 204)" fill="#5a0000"/>
-          <ellipse cx="200" cy="223" rx="18" ry="9" transform="rotate(180, 200, 223)" fill="#5a0000"/>
-          <ellipse cx="167" cy="204" rx="18" ry="9" transform="rotate(240, 167, 204)" fill="#5a0000"/>
-          <ellipse cx="200" cy="147" rx="18" ry="9" transform="rotate(0,   200, 147)" fill="#cc1111" filter="url(#eg)"/>
-          <ellipse cx="233" cy="166" rx="18" ry="9" transform="rotate(60,  233, 166)" fill="#cc1111" filter="url(#eg)"/>
-          <ellipse cx="167" cy="166" rx="18" ry="9" transform="rotate(300, 167, 166)" fill="#cc1111" filter="url(#eg)"/>
-          <ellipse cx="200" cy="147" rx="18" ry="9" transform="rotate(0,   200, 147)" fill="#8b0000"/>
-          <ellipse cx="233" cy="166" rx="18" ry="9" transform="rotate(60,  233, 166)" fill="#8b0000"/>
-          <ellipse cx="167" cy="166" rx="18" ry="9" transform="rotate(300, 167, 166)" fill="#8b0000"/>
+          <ellipse cx="233" cy="204" rx="18" ry="9" transform="rotate(120,233,204)" fill="#5a0000"/>
+          <ellipse cx="200" cy="223" rx="18" ry="9" transform="rotate(180,200,223)" fill="#5a0000"/>
+          <ellipse cx="167" cy="204" rx="18" ry="9" transform="rotate(240,167,204)" fill="#5a0000"/>
+          <ellipse cx="200" cy="147" rx="18" ry="9" transform="rotate(0,200,147)"   fill="#cc1111" filter="url(#eg)"/>
+          <ellipse cx="233" cy="166" rx="18" ry="9" transform="rotate(60,233,166)"  fill="#cc1111" filter="url(#eg)"/>
+          <ellipse cx="167" cy="166" rx="18" ry="9" transform="rotate(300,167,166)" fill="#cc1111" filter="url(#eg)"/>
+          <ellipse cx="200" cy="147" rx="18" ry="9" transform="rotate(0,200,147)"   fill="#8b0000"/>
+          <ellipse cx="233" cy="166" rx="18" ry="9" transform="rotate(60,233,166)"  fill="#8b0000"/>
+          <ellipse cx="167" cy="166" rx="18" ry="9" transform="rotate(300,167,166)" fill="#8b0000"/>
         </svg>
         <span class="nav-wordmark"><span>substrate</span>.icu <span class="dim">/ docs / zkpki</span></span>
       </a>
@@ -203,532 +290,350 @@
     </div>
   </div>
 </nav>
- 
+
 <div class="container-xl px-0">
   <div class="docs-layout">
- 
+
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-section">
-        <div class="sidebar-heading">On this page</div>
+        <div class="sidebar-heading">ZK-PKI</div>
         <ul class="sidebar-list">
-          <li><a href="#abstract">1. Abstract</a></li>
-          <li><a href="#motivation">2. Motivation</a></li>
-          <li><a href="#overview">3. System Overview</a></li>
-          <li><a href="#cert-structure">4. Certificate Structure</a></li>
-          <li><a href="#attestation">5. Attestation</a></li>
-          <li><a href="#genesis">6. Genesis Flow</a></li>
-          <li><a href="#storage">7. Storage</a></li>
-          <li><a href="#compromise">8. Compromise Handling</a></li>
-          <li><a href="#rpc">9. JSON-RPC API</a></li>
-          <li><a href="#fido2">10. FIDO2 Compliance</a></li>
-          <li><a href="#extrinsics">11. Extrinsics</a></li>
-          <li><a href="#security">12. Security Properties</a></li>
-          <li><a href="#status">13. Implementation Status</a></li>
-          <li><a href="#whitelist">14. Whitelist Governance</a></li>
-          <li><a href="#references">15. References</a></li>
+          <li><a href="#what" class="active">What is ZK-PKI</a></li>
+          <li><a href="#ceremony">The Ceremony</a></li>
+          <li><a href="#tiers">Attestation Tiers</a></li>
+          <li><a href="#apple">Why Apple is Limited</a></li>
+          <li><a href="#trust">Roots and Issuers</a></li>
+          <li><a href="#reputation">Reputation Scoring</a></li>
+          <li><a href="#kyc">KYC vs No KYC</a></li>
+          <li><a href="#pop">Proof of Personhood</a></li>
+          <li><a href="#extrinsics">Extrinsics</a></li>
         </ul>
       </div>
       <div class="sidebar-section">
-        <div class="sidebar-heading">Related</div>
+        <div class="sidebar-heading">Reference</div>
         <ul class="sidebar-list">
-          <li><a href="/pns2">PNS2 Specification</a></li>
+          <li><a href="/zkpki/spec">Full Specification</a></li>
+          <li><a href="https://www.npmjs.com/package/@substrate-icu/sdk" target="_blank" rel="noopener">SDK on npm</a></li>
           <li><a href="/">Docs home</a></li>
-          <li><a href="https://substrate.icu">substrate.icu</a></li>
         </ul>
       </div>
     </aside>
- 
-    <!-- Main content -->
+
+    <!-- Main -->
     <main class="docs-main">
- 
+
       <!-- Header -->
-      <div class="spec-header">
-        <div class="spec-eyebrow">Technical Specification</div>
+      <div class="page-header">
+        <div class="page-eyebrow">Identity Protocol</div>
         <h1>ZK-PKI</h1>
-        <p class="spec-subtitle">Blockchain-Native Public Key Infrastructure<br>Technical Specification for Polkadot Technical Fellowship Review</p>
-        <table class="meta-table">
-          <tr><td>Author</td><td>Anthony Czarnik</td></tr>
-          <tr><td>Status</td><td><span class="pill live">Testnet Ready — Paseo</span></td></tr>
-          <tr><td>Date</td><td>April 2026</td></tr>
-          <tr><td>Implementation</td><td><code>zk-pki-pallet</code> (Substrate FRAME)</td></tr>
-          <tr><td>Test Coverage</td><td>267 tests passing (156 pallet + 111 runtime)</td></tr>
-          <tr><td>Hardware Validated</td><td>Samsung S3K250AF, AMD fTPM PRG-RN</td></tr>
-          <tr><td>Patent</td><td>US Provisional 64/043,754 — Filed April 19, 2026</td></tr>
-        </table>
-      </div>
- 
-      <!-- 1. Abstract -->
-      <div class="spec-section" id="abstract">
-        <div class="section-num">Section 1</div>
-        <h2>Abstract</h2>
-        <p>ZK-PKI is a blockchain-native, FIDO2-compliant Public Key Infrastructure implemented as a Substrate FRAME pallet. It provides hardware-anchored proof of personhood, certificate issuance, and lifecycle management without biometric surrender, centralized authorities, or trusted third parties.</p>
-        <p>The system is distinguished from existing PKI infrastructure by three properties: hardware-anchored Sybil resistance via TPM Endorsement Key deduplication; user-owned certificates as NFTs that issuers cannot burn; and composable trust chains with no universal trust assumption.</p>
-        <p>ZK-PKI addresses a gap that existing systems do not close. Worldcoin requires biometric surrender. Traditional PKI requires centralized Certificate Authorities. Token-weighted governance concentrates power in whales. ZK-PKI requires only that the user possess real hardware and pass their device's own biometric check — the biometric never leaves the device.</p>
-      </div>
- 
-      <!-- 2. Motivation -->
-      <div class="spec-section" id="motivation">
-        <div class="section-num">Section 2</div>
-        <h2>Motivation</h2>
-        <h3>2.1 The Sybil Problem on Public Blockchains</h3>
-        <p>Public blockchains are permissionless by design. Any address can be created for near-zero cost. This makes Sybil attacks trivially cheap — one actor controlling thousands of identities can manipulate governance, drain faucets, and game incentive systems.</p>
-        <p>Existing approaches are inadequate. Token-weighted governance concentrates power in whales. KYC via centralized providers reintroduces the trusted third party problem. Biometric systems require surrendering permanent physiological data to an authority. Social graph attestation is gameable at scale.</p>
-        <h3>2.2 The Hardware Anchor</h3>
-        <p>Modern consumer devices contain hardware security modules that generate cryptographic keypairs inside tamper-resistant silicon. The TPM Endorsement Key is burned in at manufacture — it cannot be copied, extracted, or replicated in software. Every physical device has exactly one EK.</p>
-        <p>ZK-PKI uses this existing hardware infrastructure as the identity anchor. The cost of a Sybil attack scales directly with the cost of real hardware. A bot farm that wants N proof-of-personhood certificates must acquire N physical devices.</p>
-        <h3>2.3 Why a Substrate Pallet</h3>
-        <p>The Polkadot ecosystem lacks a native identity layer that is hardware-anchored, user-owned, and composable. Existing identity solutions either require off-chain trust or centralized issuers. A pallet-native PKI that is verifiable on-chain, hardware-anchored off-chain, and composable by default fills this gap. PNS2 names integrate directly with ZK-PKI certificates — a resolved name can carry proof that a real person controls it.</p>
-      </div>
- 
-      <!-- 3. System Overview -->
-      <div class="spec-section" id="overview">
-        <div class="section-num">Section 3</div>
-        <h2>System Overview</h2>
-        <h3>3.1 Trust Hierarchy</h3>
-        <p>ZK-PKI operates a three-tier trust hierarchy. Trust flows downward — roots issue to issuers, issuers issue to end users. There is no universal trust assumption at any tier.</p>
-        <table class="spec-table">
-          <thead><tr><th>Tier</th><th>Role</th><th>Key Properties</th></tr></thead>
-          <tbody>
-            <tr><td>Root</td><td>Trust anchor</td><td>Self-registered, proxy account required, can only issue issuer certs, reputation-scored, no universal trust assumed</td></tr>
-            <tr><td>Issuer</td><td>Certificate authority</td><td>Root-issued, proxy account required, offers contracts to end users, can suspend but not burn user certs</td></tr>
-            <tr><td>End User</td><td>Certificate holder</td><td>Issuer-contracted, hardware-generated keypair, owns their cert as an NFT, can self-discard</td></tr>
-          </tbody>
-        </table>
-        <div class="callout">Roots are self-registered. There is no application process or approval gate. Trust is earned, not assumed. A newly registered root has minimal reputation and relying parties are not required to trust it.</div>
- 
-        <h3>3.2 Certificate Ownership Model</h3>
-        <p>Certificates in ZK-PKI are NFTs owned by the end user's SS58 address. The issuer who minted the certificate cannot burn it. The issuer can suspend or invalidate the cert's <em>presence in the lookup table</em> — functionally revoking it from a relying party's perspective — but the NFT remains permanently in the user's possession.</p>
-        <p>This design separates two concerns that traditional PKI conflates: the credential's existence and the credential's validity. The user always owns proof that a cert was minted. Whether relying parties honor it is a separate question governed by the lookup table state.</p>
- 
-        <h3>3.3 Attestation Tiers</h3>
-        <table class="spec-table">
-          <thead><tr><th>Type</th><th>Hardware Required</th><th>PoP Eligible</th></tr></thead>
-          <tbody>
-            <tr><td>Tpm</td><td>Physical TPM 2.0 or Android StrongBox with full EK chain</td><td><span class="pill yes">Yes — with ProofOfPersonhood EKU</span></td></tr>
-            <tr><td>Packed</td><td>Secure Enclave, TEE, or software equivalent</td><td><span class="pill no">No</span></td></tr>
-            <tr><td>None</td><td>None — self-attested</td><td><span class="pill no">No</span></td></tr>
-          </tbody>
-        </table>
-        <div class="callout warn">Proof of Personhood eligibility requires <code>AttestationType::Tpm</code> combined with the <code>ProofOfPersonhood</code> Extended Key Usage on the issuer template. Apple Secure Enclave devices receive <code>Packed</code> attestation — they can hold certificates but are not eligible for PoP certs. This is an Apple platform constraint.</div>
-      </div>
- 
-      <!-- 4. Certificate Structure -->
-      <div class="spec-section" id="cert-structure">
-        <div class="section-num">Section 4</div>
-        <h2>Certificate Structure</h2>
-        <h3>4.1 Thumbprint Computation</h3>
-        <p>Every certificate is identified by a Blake2b-256 thumbprint computed on-chain at mint time. The thumbprint is derived from the canonical serialization of these fields in order:</p>
-        <table class="spec-table">
-          <thead><tr><th>#</th><th>Field</th><th>Notes</th></tr></thead>
-          <tbody>
-            <tr><td>1</td><td><code>schema_version (u16)</code></td><td>First field — enables future migration detection</td></tr>
-            <tr><td>2</td><td><code>root_address</code></td><td>SS58 AccountId of the root that authorized the issuer</td></tr>
-            <tr><td>3</td><td><code>issuer_address</code></td><td>SS58 AccountId of the issuing entity</td></tr>
-            <tr><td>4</td><td><code>user_address</code></td><td>SS58 AccountId of the certificate holder</td></tr>
-            <tr><td>5</td><td><code>cert_ec_pubkey</code></td><td>DevicePublicKey enum — P-256, P-521, or ML-DSA</td></tr>
-            <tr><td>6</td><td><code>expiry_block (u64)</code></td><td>Absolute block number — not a duration</td></tr>
-            <tr><td>7</td><td><code>issuer_metadata</code></td><td>Optional immutable issuer-defined metadata</td></tr>
-          </tbody>
-        </table>
-        <p>Hash function: <code>sp_core::blake2_256</code> — Blake2b variant, 256-bit output. Computed on-chain at mint time via pallet extrinsic. Thumbprint changes on any field modification, invalidating the cert.</p>
- 
-        <h3>4.2 Hot/Cold Record Split</h3>
-        <p>Certificate storage is split into hot and cold records to minimize read cost for the common case. Relying parties read <code>CertRecordHot</code> for validity checks. <code>CertRecordCold</code> is only accessed for signature verification and HIP proof operations.</p>
-        <table class="spec-table">
-          <thead><tr><th>Record</th><th>Contents</th></tr></thead>
-          <tbody>
-            <tr><td><code>CertRecordHot</code></td><td>state (CertState enum), user address, issuer address, root address, expiry block, attestation type, EK hash, template name, EKUs, schema version</td></tr>
-            <tr><td><code>CertRecordCold</code></td><td>cert_ec_pubkey (DevicePublicKey enum), suspension metadata, issuer_metadata, genesis_fingerprint (GenesisHardwareFingerprint for PoP certs), deposit amount, genesis_os_* fields</td></tr>
-          </tbody>
-        </table>
- 
-        <h3>4.3 Certificate State Machine</h3>
-        <p>Certificate state is represented by the <code>CertState</code> enum on the hot record. The five-state machine preserves full history for retroactive validity determination.</p>
-        <table class="spec-table">
-          <thead><tr><th>State</th><th>Meaning</th></tr></thead>
-          <tbody>
-            <tr><td>Active</td><td>Fully valid and operational. Present in lookup table.</td></tr>
-            <tr><td>Suspended</td><td>Issuer has suspended. Entry remains. NFT remains with user. Subject to 60-day purge if not reactivated.</td></tr>
-            <tr><td>Expired</td><td>TTL exceeded. Flipped by <code>on_initialize</code> at expiry block. Subject to 60-day purge window.</td></tr>
-            <tr><td>Compromised</td><td>Associated root or issuer marked compromised. Relying parties compare <code>mint_block</code> to <code>compromised_at_block</code>.</td></tr>
-            <tr><td>Challenged</td><td>Under active challenge during 45-day contest window.</td></tr>
-          </tbody>
-        </table>
- 
-        <h3>4.4 Extended Key Usage</h3>
-        <table class="spec-table">
-          <thead><tr><th>EKU</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td>ServerAuth</td><td>Standard X.509 — TLS server authentication</td></tr>
-            <tr><td>ClientAuth</td><td>Standard X.509 — TLS client authentication</td></tr>
-            <tr><td>CodeSigning</td><td>Standard X.509 — code signing</td></tr>
-            <tr><td>EmailProtection</td><td>Standard X.509 — S/MIME email</td></tr>
-            <tr><td>ProofOfPersonhood</td><td>ZK-PKI — hardware-attested human presence. Requires Tpm attestation. Forces <code>PopRequirement::Required</code> on template.</td></tr>
-            <tr><td>BlockchainSigning</td><td>ZK-PKI — on-chain transaction signing</td></tr>
-            <tr><td>IdentityAssertion</td><td>ZK-PKI — presenting identity to relying parties</td></tr>
-            <tr><td>IssuerCert</td><td>ZK-PKI capability — can issue end user certs</td></tr>
-            <tr><td>RootCert</td><td>ZK-PKI capability — can issue issuer certs</td></tr>
-            <tr><td>SmartContractIssuer</td><td>ZK-PKI capability — automated contract issuance</td></tr>
-          </tbody>
-        </table>
-        <div class="callout">Custom OIDs are pending IANA Private Enterprise Number assignment (request PHH7-C3F-3EC filed April 2026). OID arc: 1.3.6.1.4.1.YOUR_PEN — search-replace when PEN assigned.</div>
-      </div>
- 
-      <!-- 5. Attestation -->
-      <div class="spec-section" id="attestation">
-        <div class="section-num">Section 5</div>
-        <h2>Attestation and Hardware Integrity</h2>
-        <h3>5.1 TPM Attestation Chain Verification</h3>
-        <p>For Tpm-tier attestation the pallet verifies a full certificate chain from the device's endorsement key through the manufacturer intermediate to a known root. Current whitelist entries verified against real hardware:</p>
-        <ul class="spec-list">
-          <li>Samsung S3K250AF — intermediate hash captured from SM-G986U (Galaxy S20+, Android 13)</li>
-          <li>AMD fTPM PRG-RN — intermediate hash captured from AMD Ryzen laptop (Lucy, Windows 11)</li>
-        </ul>
-        <p>The whitelist is hardcoded for Paseo and Kusama testnet. At mainnet the whitelist migrates to an on-chain governance-controlled registry.</p>
- 
-        <h3>5.2 EK Deduplication</h3>
-        <p>The TPM Endorsement Key is a device-unique key burned in at manufacture and present in every TPM attestation statement. ZK-PKI extracts the EK public key from the attestation chain and uses its Blake2b-256 hash as the deduplication key.</p>
-        <p>At mint: the pallet extracts the EK from the attestation chain, computes <code>blake2_256(ek_public)</code>, checks the EK registry for an existing active PoP cert, and rejects the mint if one exists. The EK hash is written to the registry atomically with the cert mint.</p>
-        <p>This mechanism means the cost of a Sybil attack scales with the cost of real hardware. A bot farm that wants N PoP certificates must acquire N physical devices with N distinct Endorsement Keys.</p>
- 
-        <h3>5.3 Hardware Integrity Proof</h3>
-        <p>PoP-eligible certificates at schema version 2 and above require a Hardware Integrity Proof (HIP) on every signing operation. The HIP proves that the signing device is the same device that enrolled, and that its security posture has not degraded since genesis.</p>
-        <p>On Windows TPM 2.0, the HIP is a <code>TPM2_Quote</code> — a TPM-signed assertion over selected PCR values using an Attestation Identity Key. Verification checks:</p>
-        <ul class="spec-list">
-          <li><code>blake2_256(ek_public) == genesis.ek_hash</code> — same physical device that enrolled</li>
-          <li><code>aik_certify_signature</code> valid under EK — AIK was created under EK hierarchy (TPM2_Certify)</li>
-          <li><code>quote_signature</code> valid under AIK over SHA-256(TPMS_ATTEST) — correct TPM signing domain</li>
-          <li>PCR 7 matches genesis value — Secure Boot state unchanged</li>
-          <li>No regression in OS version or patch levels</li>
-        </ul>
-        <p>Android StrongBox HIP proof uses a fresh attestation chain with <code>hardwareEnforced</code> RootOfTrust values compared against genesis fingerprint. Implementation pending ceremony tool completion — stubbed in current release.</p>
- 
-        <h3>5.4 PoP-Asserted Action Pattern</h3>
-        <p>Every signing operation from a PoP-certified address carries a <code>PopAssertion</code> alongside the standard Substrate extrinsic signature. The assertion contains a <code>cert_ec_signature</code> over the call data plus a fresh nonce, and optionally a HIP proof.</p>
-        <p>The nonce is derived as <code>blake2_256(parent_hash || cert_thumbprint || call_data)</code> — client-computable before submission, unpredictable from the chain's perspective, and bound to the specific call being authorized.</p>
-      </div>
- 
-      <!-- 6. Genesis Flow -->
-      <div class="spec-section" id="genesis">
-        <div class="section-num">Section 6</div>
-        <h2>Genesis Transaction Flow</h2>
-        <h3>6.1 Root Registration</h3>
-        <p>A root entity registers by calling <code>register_root</code> with a valid hardware attestation payload and a proxy account that already exists in <code>pallet_proxy</code>. The pallet verifies the attestation chain, extracts and registers the EK, and writes the root record.</p>
- 
-        <h3>6.2 Issuer Issuance</h3>
-        <p>A root issues an issuer certificate by calling <code>issue_issuer_cert</code> with the candidate issuer's address and the EKUs to grant. EKU capability inheritance is enforced — an issuer cannot be granted EKUs the root does not itself hold.</p>
- 
-        <h3>6.3 End User Certificate Mint</h3>
-        <ul class="spec-list">
-          <li>Issuer creates a certificate template specifying <code>PopRequirement</code>, TTL bounds, maximum cert count, and EKUs</li>
-          <li>Issuer calls <code>offer_contract</code> — pallet generates a unique block-bound nonce and writes the offer to <code>ContractOffers</code> storage</li>
-          <li>User's device ceremony generates <code>cert_ec</code> keypair inside StrongBox/TPM. For PoP: TOTP secret generated atomically with keypair inside hardware</li>
-          <li>User calls <code>mint_cert</code> with attestation payload, cert_ec public key, OTP (PoP only), contract nonce, and HIP proof (schema v2+)</li>
-          <li>Pallet atomically verifies all inputs, computes Blake2b-256 thumbprint, mints NFT, writes <code>CertLookupHot</code> and <code>CertLookupCold</code>, registers EK hash, and distributes fees</li>
-          <li>Contract nonce marked consumed atomically — replay impossible</li>
-        </ul>
- 
-        <h3>6.4 Fee Distribution</h3>
-        <table class="spec-table">
-          <thead><tr><th>Tier</th><th>Mint Fee</th><th>Protocol (10%)</th><th>Deposit (0.5 DOT)</th><th>Block Creator (40% cap)</th></tr></thead>
-          <tbody>
-            <tr><td>Tpm + PoP</td><td>1 DOT</td><td>0.1 DOT</td><td>0.5 DOT</td><td>0.4 DOT</td></tr>
-            <tr><td>Tpm no PoP / Packed</td><td>1.5 DOT</td><td>0.15 DOT</td><td>0.5 DOT</td><td>0.6 DOT + 0.25 to maintainer</td></tr>
-            <tr><td>None</td><td>2 DOT</td><td>0.2 DOT</td><td>0.5 DOT</td><td>0.8 DOT + 0.5 to maintainer</td></tr>
-          </tbody>
-        </table>
-        <div class="callout">PoP certs are cheapest by design. The hardware does the security work. Packed and None tiers carry higher fees reflecting the reduced security guarantees and greater R&D burden for the protocol to handle them safely.</div>
-      </div>
- 
-      <!-- 7. Storage -->
-      <div class="spec-section" id="storage">
-        <div class="section-num">Section 7</div>
-        <h2>Storage Architecture</h2>
-        <h3>7.1 Primary Storage</h3>
-        <table class="spec-table">
-          <thead><tr><th>Storage Item</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>CertLookupHot</code></td><td>Primary cert index. Hot path for relying party queries.</td></tr>
-            <tr><td><code>CertLookupCold</code></td><td>Cold path. Accessed for signature verification and deposit ops.</td></tr>
-            <tr><td><code>Roots</code></td><td>Registered root entities.</td></tr>
-            <tr><td><code>Issuers</code></td><td>Registered issuer entities.</td></tr>
-            <tr><td><code>ContractOffers</code></td><td>Pending mint offers. Consumed atomically at mint.</td></tr>
-            <tr><td><code>EkRegistry</code></td><td>EK deduplication map. One active PoP cert per EK.</td></tr>
-            <tr><td><code>CertTemplates</code></td><td>Issuer-defined certificate policies.</td></tr>
-            <tr><td><code>RootCompromiseRegistry</code></td><td>Write-once. OpenGov-controlled. Records compromised roots.</td></tr>
-          </tbody>
-        </table>
- 
-        <h3>7.2 Secondary Indexes</h3>
-        <p>Secondary double-maps enable O(1) trie prefix iteration for common query patterns without linear table scans:</p>
-        <ul class="spec-list">
-          <li><code>CertsByIssuer&lt;(issuer, thumbprint) &rarr; ()&gt;</code></li>
-          <li><code>CertsByUser&lt;(user, thumbprint) &rarr; ()&gt;</code></li>
-          <li><code>CertsByRoot&lt;(root, thumbprint) &rarr; ()&gt;</code></li>
-          <li><code>UserIssuerIndex&lt;(user, issuer) &rarr; thumbprint&gt;</code></li>
-          <li><code>IssuerTemplateNames&lt;issuer &rarr; BoundedVec&lt;n&gt;&gt;</code></li>
-          <li><code>TemplateActiveCertCount&lt;(issuer, name) &rarr; u32&gt;</code></li>
-        </ul>
- 
-        <h3>7.3 Pre-Scheduled Expiry and Purge</h3>
-        <p>ZK-PKI uses pre-scheduled indexes to achieve O(1) <code>on_initialize</code> operations:</p>
-        <ul class="spec-list">
-          <li><code>ExpiryIndex&lt;block &rarr; BoundedVec&lt;thumbprint&gt;&gt;</code> — pre-scheduled at mint. <code>on_initialize</code> flips state to Expired at the target block.</li>
-          <li><code>PurgeIndex&lt;block &rarr; BoundedVec&lt;thumbprint&gt;&gt;</code> — pre-scheduled at suspension/expiry. <code>on_initialize</code> removes cert records at the purge block.</li>
-        </ul>
-        <p>The 60-day inactive purge window (864,000 blocks at 6-second block time) prevents the lookup table from becoming a permanent record of abandoned identities. Anyone can call <code>cleanup</code> on an expired cert past the grace window and receive the full deposit as a bounty — chain hygiene is economically self-sustaining.</p>
-      </div>
- 
-      <!-- 8. Compromise Handling -->
-      <div class="spec-section" id="compromise">
-        <div class="section-num">Section 8</div>
-        <h2>Compromise Handling</h2>
-        <h3>8.1 Issuer Compromise</h3>
-        <p>A root invokes <code>invalidate_issuer</code> to flag an issuer as compromised. The issuer's <code>compromised_at_block</code> is recorded as a write-once field. Certs minted before <code>compromised_at_block</code> retain their validity status. Certs minted on or after that block are implicitly compromised.</p>
- 
-        <h3>8.2 Root Compromise</h3>
-        <p>Root compromise is a network-level event requiring OpenGov governance. No single actor — including the root itself — can write to <code>RootCompromiseRegistry</code> directly. The design prevents hearsay attacks where a bad actor falsely marks a legitimate root as compromised.</p>
-        <p>Certs minted before the root's <code>compromised_at_block</code> remain in the lookup table. Relying parties compare <code>mint_block</code> to <code>compromised_at_block</code> to determine validity. A root under active challenge during the 45-day contest window remains operational until the challenge resolves.</p>
- 
-        <h3>8.3 Device Loss and Recovery</h3>
-        <p>ZK-PKI provides a two-tier self-discard mechanism:</p>
-        <ul class="spec-list">
-          <li><strong>Standard path (hardware present):</strong> The user calls <code>self_discard_cert</code> with a <code>PopAssertion</code> — cert_ec signature plus HIP proof. Full hardware verification. Cert removed from lookup table, deposit returned, NFT remains.</li>
-          <li><strong>Recovery path (hardware lost):</strong> The user calls <code>self_discard_cert</code> with only their SS58 key and the cert thumbprint. The thumbprint is purged from the lookup table. The recovery event is recorded on-chain as an immutable, timestamped, public attestation that the user has declared their hardware lost. EK registry entry cleared — user can enroll a new device.</li>
-        </ul>
-      </div>
- 
-      <!-- 9. JSON-RPC -->
-      <div class="spec-section" id="rpc">
-        <div class="section-num">Section 9</div>
-        <h2>JSON-RPC API</h2>
-        <p>The <code>zkpki_</code> RPC namespace exposes lookup table queries for third-party verification without requiring direct chain access. Every cert resolution endpoint returns expiry status, <code>is_active</code>, and <code>compromised_at_block</code> explicitly.</p>
-        <table class="spec-table">
-          <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>zkpki_certStatus(thumbprint)</code></td><td>Returns full cert status including state, expiry, attestation type, EKUs, template fields, and compromised_at_block if applicable. OCSP equivalent.</td></tr>
-            <tr><td><code>zkpki_certsByIssuer(issuer)</code></td><td>Returns all cert thumbprints issued by this address.</td></tr>
-            <tr><td><code>zkpki_certsByUser(user)</code></td><td>Returns all cert thumbprints held by this address.</td></tr>
-            <tr><td><code>zkpki_certsByRoot(root)</code></td><td>Returns all cert thumbprints under this root.</td></tr>
-            <tr><td><code>zkpki_ekStatus(ek_hash)</code></td><td>Returns active PoP cert thumbprint for a given EK hash.</td></tr>
-            <tr><td><code>zkpki_rootStatus(root)</code></td><td>Returns root validity status including compromised_at_block if present.</td></tr>
-            <tr><td><code>zkpki_issuerStatus(issuer)</code></td><td>Returns issuer validity status including compromised_at_block if present.</td></tr>
-          </tbody>
-        </table>
-      </div>
- 
-      <!-- 10. FIDO2 -->
-      <div class="spec-section" id="fido2">
-        <div class="section-num">Section 10</div>
-        <h2>FIDO2 Compliance</h2>
-        <p>ZK-PKI is architecturally consistent with FIDO2 requirements. The TOTP secret is generated by and validated against the TPM — the TPM is the validation authority, not a server. This inverts the standard TOTP model in a way that strengthens rather than weakens the guarantee.</p>
-        <table class="spec-table">
-          <thead><tr><th>FIDO2 Requirement</th><th>ZK-PKI Implementation</th></tr></thead>
-          <tbody>
-            <tr><td>TPM/secure enclave keypair generation</td><td>TPM extrinsic at genesis ceremony</td></tr>
-            <tr><td>Private key never leaves device</td><td>Hardware-bound — cert_ec_pubkey is the public key only</td></tr>
-            <tr><td>Public key registered with relying party</td><td>Enshrined in NFT on-chain at mint</td></tr>
-            <tr><td>Challenge-response at registration</td><td>Genesis contract signing with block-bound nonce</td></tr>
-            <tr><td>User verification</td><td>TOTP — hardware generated, TPM is the validation authority</td></tr>
-            <tr><td>Bound credentials</td><td>Device-bound keypair — EK deduplication enforces device uniqueness</td></tr>
-            <tr><td>Attestation object</td><td>The NFT cert itself — contains full attestation chain</td></tr>
-            <tr><td>Credential ID</td><td>Thumbprint (Blake2b-256)</td></tr>
-          </tbody>
-        </table>
-      </div>
- 
-      <!-- 11. Extrinsics -->
-      <div class="spec-section" id="extrinsics">
-        <div class="section-num">Section 11</div>
-        <h2>Pallet Extrinsics</h2>
-        <p>ZK-PKI exposes 19 extrinsics across three functional groups.</p>
- 
-        <h3>11.1 Root and Issuer Management</h3>
-        <table class="spec-table">
-          <thead><tr><th>Extrinsic</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>register_root</code></td><td>Register a new root entity. Proxy must exist in pallet_proxy. Full attestation chain required.</td></tr>
-            <tr><td><code>issue_issuer_cert</code></td><td>Root issues issuer cert to candidate. EKU subset of root capability enforced.</td></tr>
-            <tr><td><code>invalidate_issuer</code></td><td>Root marks issuer as compromised. Write-once compromised_at_block set.</td></tr>
-            <tr><td><code>flag_root_compromised</code></td><td>OpenGov-only. Writes root to RootCompromiseRegistry.</td></tr>
-            <tr><td><code>deregister_root</code></td><td>Root voluntarily deregisters. No active issuers required.</td></tr>
-            <tr><td><code>challenge_compromise</code></td><td>Root challenges a compromise flag during 45-day contest window.</td></tr>
-            <tr><td><code>resolve_challenge</code></td><td>Resolve a pending compromise challenge.</td></tr>
-          </tbody>
-        </table>
- 
-        <h3>11.2 Certificate Lifecycle</h3>
-        <table class="spec-table">
-          <thead><tr><th>Extrinsic</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>offer_contract</code></td><td>Issuer offers a certificate to a user. Block-bound nonce generated.</td></tr>
-            <tr><td><code>mint_cert</code></td><td>User accepts offer and mints certificate. Atomic fee distribution and storage writes.</td></tr>
-            <tr><td><code>suspend_cert</code></td><td>Issuer suspends a certificate. Entry remains, state set to Suspended.</td></tr>
-            <tr><td><code>reactivate_cert</code></td><td>Issuer reactivates a suspended certificate.</td></tr>
-            <tr><td><code>invalidate_cert</code></td><td>Issuer removes cert from lookup table. NFT remains with user.</td></tr>
-            <tr><td><code>self_discard_cert</code></td><td>User discards their own cert. Standard path requires PopAssertion. Recovery path accepts SS58 only.</td></tr>
-            <tr><td><code>reissue_cert</code></td><td>Atomic old cert removal and new cert mint. EK registry updated in same execution.</td></tr>
-            <tr><td><code>renew_cert</code></td><td>Extend cert validity. TTL must remain within template bounds.</td></tr>
-            <tr><td><code>cleanup</code></td><td>Anyone can reap an expired cert past the 60-day grace window. Full deposit transferred to caller as bounty.</td></tr>
-          </tbody>
-        </table>
- 
-        <h3>11.3 Template Management</h3>
-        <table class="spec-table">
-          <thead><tr><th>Extrinsic</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>create_cert_template</code></td><td>Issuer creates a cert template. Deposit reserved. EKU capability enforced.</td></tr>
-            <tr><td><code>deactivate_cert_template</code></td><td>Mark template inactive. Blocks new offers. Deposit held.</td></tr>
-            <tr><td><code>discard_cert_template</code></td><td>Remove template entirely. Requires zero active certs. Deposit released.</td></tr>
-          </tbody>
-        </table>
-      </div>
- 
-      <!-- 12. Security -->
-      <div class="spec-section" id="security">
-        <div class="section-num">Section 12</div>
-        <h2>Security Properties</h2>
-        <h3>12.1 Guarantees</h3>
-        <ul class="spec-list">
-          <li>One active PoP cert per physical device — enforced by EK deduplication</li>
-          <li>Private key never leaves hardware — cert_ec_pubkey is public key only, never private</li>
-          <li>Cert immutability — thumbprint changes on any field modification, invalidating the cert</li>
-          <li>Replay prevention — block-bound nonces consumed atomically at mint</li>
-          <li>Non-repudiation — mint_block timestamp plus compromised_at_block enables retroactive validity determination</li>
-          <li>Atomic state transitions — no partial updates across all 11 deposit sites</li>
-          <li>Hardware integrity continuity — HIP proof required on every PoP cert signing operation</li>
-        </ul>
- 
-        <h3>12.2 Explicit Non-Goals</h3>
-        <ul class="spec-list">
-          <li>Not a universal trust system — trust is contextual, relying parties set their own thresholds</li>
-          <li>Not revocable by issuers — users own their NFT cert permanently</li>
-          <li>Not dependent on any single root — multiple roots coexist with independent reputation</li>
-          <li>Not compatible with VMs for PoP claims — hardware attestation and EK deduplication required</li>
-          <li>Not key-rotatable — certs are monolithic by design, device loss requires reissuance</li>
-          <li>Not a DNS integration — see PNS2 specification</li>
-        </ul>
- 
-        <h3>12.3 Known Limitations</h3>
-        <ul class="spec-list">
-          <li><strong>Redundant TPMs:</strong> devices with both fTPM and discrete TPM can mint two PoP certs from two different EKs. Mitigated by one-cert-per-device policy at the issuer template level.</li>
-          <li><strong>fTPM vs discrete TPM physical security:</strong> AMD fTPM and Intel PTT share silicon with the main CPU. Discrete TPMs (Infineon, STMicro) have stronger isolation guarantees. Both are accepted — relying parties may distinguish via attestation metadata.</li>
-          <li><strong>Android StrongBox HIP proof:</strong> implementation pending ceremony tool completion. Stubbed in current release.</li>
-          <li><strong>Weight benchmarks:</strong> placeholder values. Measured values required before Kusama deployment.</li>
-          <li><strong>IANA PEN:</strong> custom EKU OIDs pending assignment (request PHH7-C3F-3EC).</li>
-        </ul>
-      </div>
- 
-      <!-- 13. Implementation Status -->
-      <div class="spec-section" id="status">
-        <div class="section-num">Section 13</div>
-        <h2>Implementation Status</h2>
-        <h3>13.1 Completed</h3>
-        <ul class="spec-list">
-          <li>All 19 pallet extrinsics implemented and tested</li>
-          <li>267 tests passing — 156 pallet workspace + 111 runtime (86 zk-pki-runtime + 25 paseo-runtime)</li>
-          <li>no_std verified: zk-pki-pallet, zk-pki-primitives, zk-pki-hip all compile without std</li>
-          <li>Real hardware validation: Samsung S3K250AF (Galaxy S20+) and AMD fTPM PRG-RN (Ryzen laptop)</li>
-          <li>TPM2_Quote HIP proof with correct signing domain (SHA-256(TPMS_ATTEST)) verified against real hardware</li>
-          <li>Fee system with named holds (fungible::MutateHold, HoldReason::CertDeposit)</li>
-          <li>Proxy validation wired to pallet_proxy via ValidateProxy trait</li>
-          <li>EKU capability inheritance enforced across root to issuer to template</li>
-          <li>PoP-asserted action pattern with two-tier self-discard</li>
-          <li>Pre-scheduled expiry and purge indexes for O(1) on_initialize</li>
-          <li>Hot/cold cert record split for read-optimized relying party queries</li>
-          <li>Paseo runtime end-to-end verified with production Config values</li>
-        </ul>
- 
-        <h3>13.2 Deferred</h3>
-        <ul class="spec-list">
-          <li>Android StrongBox HIP proof ceremony — stubbed, pending Dotwave Android client</li>
-          <li>Linux TPM path — stubbed</li>
-          <li>Weight benchmark measured values — placeholder values sufficient for Paseo, required before Kusama</li>
-          <li>ink! EK trust chain registry contract — hardcoded whitelist sufficient for Paseo</li>
-          <li>Reputation scoring off-chain worker</li>
-          <li>NFT integration via pallet-nfts</li>
-          <li>TypeScript SDK</li>
-          <li>IANA PEN OID constants — YOUR_PEN placeholder, search-replace when PEN assigned</li>
-        </ul>
- 
-        <h3>13.3 Crate Structure</h3>
-        <table class="spec-table">
-          <thead><tr><th>Crate</th><th>Contents</th></tr></thead>
-          <tbody>
-            <tr><td><code>zk-pki-primitives</code></td><td>Shared types, traits, SCALE helpers, no_std. Eku, PopAssertion, HipProof, ValidateProxy, ZkPkiHoldReason, CertTemplate, GenesisHardwareFingerprint.</td></tr>
-            <tr><td><code>zk-pki-tpm</code></td><td>TPM attestation parsing, EK extraction, trust chain verification, binding proof. KNOWN_MANUFACTURER_INTERMEDIATES whitelist.</td></tr>
-            <tr><td><code>zk-pki-hip</code></td><td>HIP proof verification, no_std. Tpm2HipVerifier (Windows TPM2_Quote). Android and Linux stubbed.</td></tr>
-            <tr><td><code>zk-pki-pallet</code></td><td>All FRAME extrinsics, storage, on_initialize, lookup table, EK registry, TTL, purge, fee distribution, atomic ops. 19 extrinsics.</td></tr>
-            <tr><td><code>zk-pki-rpc</code></td><td>JSON-RPC zkpki_ namespace. Off-chain query layer via runtime-api.</td></tr>
-            <tr><td><code>zk-pki-runtime</code></td><td>Reference runtime for integration testing. NoopProxyValidator, UnitTestWeight.</td></tr>
-            <tr><td><code>tpm2-hip-probe</code></td><td>Windows-native binary. TBS API via windows-rs. Generates CanonicalHipProof from real TPM hardware.</td></tr>
-          </tbody>
-        </table>
-      </div>
- 
-      <!-- 14. Whitelist Governance -->
-      <div class="spec-section" id="whitelist">
-        <div class="section-num">Section 14</div>
-        <h2>Hardware Whitelist Governance</h2>
-        <p>The hardware whitelist — <code>KNOWN_MANUFACTURER_INTERMEDIATES</code> — governs which TPM and StrongBox manufacturer intermediate certificates are accepted for attestation chain verification. It is the trust root for all hardware attestation in ZK-PKI.</p>
-        <p>The whitelist is explicitly not governed by OpenGov token-weighted voting. Hardware attestation chain evaluation requires domain expertise in TPM security, Android hardware attestation, and X.509 certificate chain validation. Token holders do not generally possess this expertise.</p>
-        <table class="spec-table">
-          <thead><tr><th>Phase</th><th>Authority</th></tr></thead>
-          <tbody>
-            <tr><td>Bootstrap (Paseo)</td><td>Protocol author — Anthony Czarnik. Hardcoded in <code>zk-pki-tpm/src/chain.rs</code>.</td></tr>
-            <tr><td>Council (Kusama)</td><td>Protocol author plus Technical Council — 3-5 named domain experts. ink! registry contract. Multisig controlled.</td></tr>
-            <tr><td>Mainnet Stable</td><td>Technical Committee — 7-11 named individuals. Domain experts in TPM security, Android security, PKI. No token-weighted voting.</td></tr>
-          </tbody>
-        </table>
-      </div>
- 
-      <!-- 15. References -->
-      <div class="spec-section" id="references">
-        <div class="section-num">Section 15</div>
-        <h2>References and Standards Compliance</h2>
-        <ul class="spec-list">
-          <li>TCG TPM 2.0 Library Specification, Parts 1-4</li>
-          <li>TCG EK Credential Profile for TPM Family 1.2 and 2.0</li>
-          <li>FIDO2 / WebAuthn — W3C Recommendation</li>
-          <li>RFC 5280 — Internet X.509 Public Key Infrastructure</li>
-          <li>RFC 6960 — Online Certificate Status Protocol (OCSP)</li>
-          <li>ISO/IEC 9594-8 — The Directory: Public-key and attribute certificate frameworks</li>
-          <li>Android Keystore System — Google Hardware Attestation</li>
-          <li>Apple CryptoKit / Secure Enclave documentation</li>
-          <li>Substrate FRAME documentation — frame_support, frame_system</li>
-          <li>SCALE Codec Specification — Parity Technologies</li>
-        </ul>
-        <div class="callout" style="margin-top:24px;">
-          <strong>Anthony Czarnik</strong> — April 2026 — substrate.icu<br>
-          Patent Pending: US Provisional Application 64/043,754, filed April 19, 2026
+        <p class="page-lead">Hardware-anchored public key infrastructure for the Polkadot ecosystem. Your identity certificate is minted as an NFT, anchored to the security chip in your device, and owned by you permanently.</p>
+        <div class="quick-links">
+          <a class="quick-link primary" href="/zkpki/spec">Full Specification</a>
+          <div class="npm-card">
+            <span class="npm-cmd"><span>npm install</span> @substrate-icu/sdk</span>
+            <button class="copy-btn" onclick="copyNpm(this)" title="Copy">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M3 11V3.5A1.5 1.5 0 014.5 2H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+          <a class="quick-link" href="https://github.com/prodigalwon" target="_blank" rel="noopener">GitHub</a>
         </div>
       </div>
- 
+
+      <!-- What is ZK-PKI -->
+      <span class="section-anchor" id="what"></span>
+      <div class="doc-section">
+        <h2>What is ZK-PKI</h2>
+        <p>ZK-PKI is a Substrate FRAME pallet that implements a blockchain-native Public Key Infrastructure. It solves a problem that no existing system has cleanly solved: proving that a blockchain address is controlled by a real human being, on real hardware, without surrendering biometric data to any authority.</p>
+        <p>The approach is simple. Every modern laptop and smartphone ships with a hardware security chip — a TPM or equivalent — that contains a cryptographic key burned in at manufacture. That key cannot be copied or faked. ZK-PKI uses that key to anchor an identity certificate on-chain. The certificate is an NFT. You own it. No issuer can take it from you.</p>
+        <p>ZK-PKI is live on <strong>Paseo testnet</strong>. 267 tests passing across pallet and runtime. Validated against real hardware: Samsung Galaxy S20+ and AMD Ryzen laptop.</p>
+      </div>
+
+      <!-- The Ceremony -->
+      <span class="section-anchor" id="ceremony"></span>
+      <div class="doc-section">
+        <h2>The Ceremony</h2>
+        <p>Minting a ZK-PKI certificate is called the ceremony. It is a multi-step process that concludes with an atomic on-chain transaction. Here is what happens:</p>
+
+        <ol class="steps">
+          <li>
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>Issuer creates a certificate template</h4>
+              <p>The issuer defines the terms: whether proof of personhood is required, the TTL bounds, the Extended Key Usages to grant, and the maximum number of certs that can be issued from this template.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>Issuer makes an offer</h4>
+              <p>The issuer calls <code>offer_contract</code> for a specific user. The pallet generates a unique block-bound nonce and writes the offer to chain. The nonce expires if not consumed — replay is impossible by design.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>Keypair and TOTP secret generated inside hardware</h4>
+              <p>The user's device — via the Dotwave app — generates a <code>cert_ec</code> keypair inside Android StrongBox or TPM. For proof-of-personhood certs, a TOTP secret is also generated atomically inside the same hardware. Neither the private key nor the TOTP secret ever leave the chip.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <h4>User authenticates with their device biometric</h4>
+              <p>An authenticator app uses the device's local biometric — face, fingerprint, or PIN — to produce a one-time password from the hardware-generated TOTP secret. The biometric never leaves the device. ZK-PKI never sees it. But a real person holding the physical device must be present.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">5</div>
+            <div class="step-body">
+              <h4>User submits the mint transaction</h4>
+              <p>The user calls <code>mint_cert</code> with the attestation payload, their cert_ec public key, the OTP (for PoP certs), and the contract nonce. The pallet verifies everything atomically: attestation chain, EK deduplication, OTP, nonce. If anything fails, nothing is written.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">6</div>
+            <div class="step-body">
+              <h4>Certificate minted as NFT</h4>
+              <p>The pallet computes a Blake2b-256 thumbprint, mints the NFT, writes hot and cold cert records, registers the EK hash in the deduplication registry, and distributes fees. All in a single atomic execution. The certificate now belongs to the user's SS58 address permanently.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="callout">
+          The HMAC and private key are generated together inside the same hardware chip and are verified to reside in the same silicon. This is the guarantee that makes the ceremony meaningful: you cannot automate or proxy it without physical possession of the device and the ability to pass its biometric check.
+        </div>
+      </div>
+
+      <!-- Attestation Tiers -->
+      <span class="section-anchor" id="tiers"></span>
+      <div class="doc-section">
+        <h2>Attestation Tiers</h2>
+        <p>Not all hardware provides the same security guarantees. ZK-PKI recognizes three attestation types. The tier reflects how strongly the hardware can prove it has not been tampered with — and whether the cert is eligible for proof of personhood.</p>
+
+        <div class="tier-grid">
+          <div class="tier-card">
+            <div class="tier-badge t1">Tier 1 — Gold Standard</div>
+            <h4>TPM 2.0</h4>
+            <p>Dedicated hardware security module, physically separate from the main CPU on most implementations. Full Endorsement Key chain verification.</p>
+            <p class="examples">Dell, Lenovo, HP, most AMD Ryzen laptops, Windows 11 devices</p>
+            <span class="pop-pill yes">PoP eligible</span>
+          </div>
+          <div class="tier-card">
+            <div class="tier-badge t2">Tier 2</div>
+            <h4>Android StrongBox</h4>
+            <p>Dedicated secure enclave with hardware-enforced isolation. Full EK chain verification via Android hardware attestation.</p>
+            <p class="examples">Samsung Galaxy S series, Google Pixel 3 and later</p>
+            <span class="pop-pill yes">PoP eligible</span>
+          </div>
+          <div class="tier-card">
+            <div class="tier-badge t3">Tier 3</div>
+            <h4>Packed / None</h4>
+            <p>Secure Enclave, TEE, software attestation, or self-attested. Valid for machine and organizational identity. Not eligible for proof of personhood.</p>
+            <p class="examples">Apple iPhone, iPad, Mac (Secure Enclave)</p>
+            <span class="pop-pill no">No PoP</span>
+          </div>
+        </div>
+
+        <div class="callout warn" id="apple">
+          <strong>Why Apple devices are limited</strong><br>
+          Apple's Secure Enclave is a capable security chip. The limitation is not about its strength — it is about what Apple exposes. Apple does not allow the Endorsement Key to be extracted or presented in a form compatible with open attestation chains. Without the EK, ZK-PKI cannot perform the deduplication that makes proof of personhood meaningful. Apple devices receive <code>AttestationType::Packed</code> — a machine or organizational identity tier. They are not excluded from ZK-PKI. They can hold valid certificates. They simply cannot make a hardware-verifiable claim that a unique human being controls the device. This is an Apple platform decision, not a ZK-PKI design choice.
+        </div>
+      </div>
+
+      <!-- Roots and Issuers -->
+      <span class="section-anchor" id="trust"></span>
+      <div class="doc-section">
+        <h2>Roots and Issuers</h2>
+        <p>ZK-PKI uses a three-tier trust hierarchy. Trust flows downward — roots issue to issuers, issuers issue to end users. There is no universal trust assumption at any tier. Relying parties decide which roots and issuers they accept.</p>
+
+        <table class="spec-table">
+          <thead><tr><th>Tier</th><th>Who they are</th><th>What they can do</th><th>What they cannot do</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Root</td>
+              <td>Any entity with valid hardware attestation and a proxy account</td>
+              <td>Issue issuer certificates, deregister themselves, challenge compromise flags</td>
+              <td>Issue end user certs directly, burn user NFTs, bypass EK deduplication</td>
+            </tr>
+            <tr>
+              <td>Issuer</td>
+              <td>Root-issued entity. Typically an organization or service</td>
+              <td>Create templates, offer contracts, mint user certs, suspend certs</td>
+              <td>Burn user NFTs, grant EKUs they were not given by their root, act after being invalidated</td>
+            </tr>
+            <tr>
+              <td>End User</td>
+              <td>Any individual with a compatible device</td>
+              <td>Accept offers, mint certs, self-discard, recover from device loss</td>
+              <td>Mint without an issuer offer, modify cert contents after mint</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Extended Key Usage inheritance</h3>
+        <p>EKU capability flows strictly downward and cannot be amplified. An issuer cannot grant an end user an EKU that the issuer's root did not grant to the issuer. A root cannot grant an issuer the <code>ProofOfPersonhood</code> EKU unless the root itself holds it. This prevents privilege escalation at every layer of the hierarchy.</p>
+
+        <h3>Root registration is open</h3>
+        <p>There is no application process to become a root. Any entity with valid hardware attestation and a proxy account in <code>pallet_proxy</code> can call <code>register_root</code>. A newly registered root has minimal reputation. Relying parties are under no obligation to trust it. Trust is earned over time through the reputation scoring system, not granted at registration.</p>
+      </div>
+
+      <!-- Reputation Scoring -->
+      <span class="section-anchor" id="reputation"></span>
+      <div class="doc-section">
+        <h2>Reputation Scoring</h2>
+        <p>Because root registration is open, ZK-PKI includes a reputation scoring system that tracks the behavior of roots and issuers over time. Relying parties can use reputation scores as a signal when deciding which trust chains to accept.</p>
+        <p>Reputation accrues from: certs issued without incident, longevity on-chain, hardware attestation tier of the root's own certificate, and the absence of compromise events. Reputation is damaged by: issuer invalidations, compromise flags, and address lineage to previously compromised entities.</p>
+        <div class="callout info">
+          <strong>Reputation scoring off-chain worker</strong> is deferred for Paseo. The on-chain data structures are in place. The off-chain worker that computes and surfaces scores ships before Kusama deployment.
+        </div>
+        <p>If a compromised issuer's principals attempt to register a new root, the reputation system detects address lineage and flags the new root automatically. Bad actors cannot simply abandon a compromised identity and start fresh without consequence.</p>
+      </div>
+
+      <!-- KYC vs No KYC -->
+      <span class="section-anchor" id="kyc"></span>
+      <div class="doc-section">
+        <h2>KYC vs No KYC</h2>
+        <p>ZK-PKI does not require KYC. The protocol is agnostic. Whether an issuer performs identity verification before offering a certificate is entirely up to the issuer and their use case.</p>
+
+        <h3>Without KYC</h3>
+        <p>Any user with a compatible device can receive a certificate from an issuer that does not require KYC. A person with three devices — a phone, a second phone, a laptop — can hold three certificates. All three are valid. All three are hardware-anchored. None of them prove the three certs belong to the same person. For many use cases — machine identity, service authentication, developer access — this is exactly right.</p>
+
+        <h3>With KYC</h3>
+        <p>An issuer that is regulated — a bank, a government service, a licensed exchange — may be legally required to verify that a user meets certain criteria before opening an account or providing a service. That verification happens off-chain, on the issuer's own infrastructure. ZK-PKI does not touch it. Once the issuer is satisfied, they make a certificate offer. The user mints. The on-chain cert reflects that an issuer with a KYC obligation vouches for this identity.</p>
+        <p>KYC-backed issuers can enforce one-cert-per-person at the template level by setting <code>max_certs</code> and tracking their off-chain verification records against EK hashes. The hardware deduplication ensures that even if a user tries to enroll multiple devices, each enrollment is a distinct transaction the issuer must approve.</p>
+
+        <div class="callout">
+          <strong>The key insight:</strong> ZK-PKI provides the hardware guarantee. The issuer provides the human guarantee. Combining both gives relying parties a certificate that is anchored to real hardware and vouched for by a party with legal accountability. Proof of personhood plus KYC equals verified human identity on-chain. Makes running a bot farm a very expensive proposition.
+        </div>
+      </div>
+
+      <!-- Proof of Personhood -->
+      <span class="section-anchor" id="pop"></span>
+      <div class="doc-section">
+        <h2>Proof of Personhood</h2>
+        <p>A Proof of Personhood certificate is a ZK-PKI certificate issued under the <code>ProofOfPersonhood</code> Extended Key Usage. It carries a stronger set of guarantees than a standard cert.</p>
+
+        <h3>What PoP proves</h3>
+        <ul class="steps">
+          <li>
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>Real hardware</h4>
+              <p>The cert is anchored to a physical TPM or Android StrongBox. The Endorsement Key cannot be faked or duplicated in software.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>One cert per device</h4>
+              <p>EK deduplication enforces exactly one active PoP cert per hardware root. Minting a second PoP cert on the same device is rejected at the protocol level.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>Physical presence at ceremony</h4>
+              <p>The TOTP secret is generated inside hardware and can only be unlocked by passing the device's own biometric check. A person who does not physically hold the device cannot complete the ceremony.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <h4>Hardware continuity on every signing operation</h4>
+              <p>After genesis, every signing operation from a PoP-certified address requires a Hardware Integrity Proof — a fresh attestation that the device is the same device that enrolled, with its security posture unchanged.</p>
+            </div>
+          </li>
+        </ul>
+
+        <h3>What PoP does not prove</h3>
+        <p>A PoP cert proves the above properties about the hardware. It does not prove that the person holding the hardware is who they claim to be, that they are an adult, that they are a citizen of any particular country, or that they have not enrolled a second device. Those claims require issuer-level KYC on top of the hardware guarantee.</p>
+
+        <div class="callout">
+          <strong>The bot cost argument.</strong> Without PoP, creating a Sybil identity costs fractions of a cent — just a new keypair. With ZK-PKI PoP, creating a Sybil identity requires purchasing a physical device with a qualifying TPM or StrongBox, completing the ceremony on that device, and paying the mint fee. At scale, a bot farm that wants to fake N human identities must acquire N real devices. The economics of Sybil attacks change fundamentally.
+        </div>
+      </div>
+
+      <!-- Extrinsics -->
+      <span class="section-anchor" id="extrinsics"></span>
+      <div class="doc-section">
+        <h2>Extrinsics</h2>
+        <p>ZK-PKI exposes 19 extrinsics. Full parameter signatures, weight annotations, and error codes are in the SDK and the full specification.</p>
+
+        <h3>Root and Issuer Management</h3>
+        <ul class="extrin-list">
+          <li><code>register_root</code> <span>Register a new root entity with hardware attestation and proxy account.</span></li>
+          <li><code>issue_issuer_cert</code> <span>Root issues an issuer certificate to a candidate address.</span></li>
+          <li><code>invalidate_issuer</code> <span>Root marks an issuer as compromised. Write-once.</span></li>
+          <li><code>flag_root_compromised</code> <span>OpenGov-only. Records a root in the compromise registry.</span></li>
+          <li><code>deregister_root</code> <span>Root voluntarily deregisters.</span></li>
+          <li><code>challenge_compromise</code> <span>Root contests a compromise flag during the 45-day window.</span></li>
+          <li><code>resolve_challenge</code> <span>Resolve a pending compromise challenge.</span></li>
+        </ul>
+
+        <h3>Certificate Lifecycle</h3>
+        <ul class="extrin-list">
+          <li><code>offer_contract</code> <span>Issuer offers a certificate to a user. Block-bound nonce generated.</span></li>
+          <li><code>mint_cert</code> <span>User accepts an offer and mints their certificate.</span></li>
+          <li><code>suspend_cert</code> <span>Issuer suspends a certificate. NFT remains with user.</span></li>
+          <li><code>reactivate_cert</code> <span>Issuer reactivates a suspended certificate.</span></li>
+          <li><code>invalidate_cert</code> <span>Issuer removes cert from lookup table. NFT remains.</span></li>
+          <li><code>self_discard_cert</code> <span>User discards their own cert. Recovery path available for device loss.</span></li>
+          <li><code>reissue_cert</code> <span>Atomic cert removal and new cert mint. Used for device replacement.</span></li>
+          <li><code>renew_cert</code> <span>Extend cert validity within template TTL bounds.</span></li>
+          <li><code>cleanup</code> <span>Anyone can reap an expired cert past the 60-day grace window and claim the deposit as a bounty.</span></li>
+        </ul>
+
+        <h3>Template Management</h3>
+        <ul class="extrin-list">
+          <li><code>create_cert_template</code> <span>Issuer creates a certificate template with policy parameters.</span></li>
+          <li><code>deactivate_cert_template</code> <span>Mark template inactive. Blocks new offers.</span></li>
+          <li><code>discard_cert_template</code> <span>Remove template entirely. Requires zero active certs.</span></li>
+        </ul>
+
+        <div class="doc-links">
+          <a class="doc-link-card" href="/zkpki/spec">
+            <div class="tag">Reference</div>
+            <h4>Full Specification</h4>
+            <p>Complete technical spec including storage layout, state machine, fee schedule, and FIDO2 compliance mapping.</p>
+          </a>
+          <div class="doc-link-card" style="cursor:default;">
+            <div class="tag">SDK</div>
+            <h4>Install via npm</h4>
+            <div class="npm-card" style="max-width:100%;margin-top:8px;">
+              <span class="npm-cmd"><span>npm install</span> @substrate-icu/sdk</span>
+              <button class="copy-btn" onclick="copyNpm(this)" title="Copy">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M3 11V3.5A1.5 1.5 0 014.5 2H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Copy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 </div>
- 
+
 <!-- Footer -->
 <footer class="site-footer">
   <div class="container-xl">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
       <div class="footer-brand">
         <svg width="16" height="16" viewBox="0 0 400 310" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <ellipse cx="200" cy="57"  rx="34" ry="16" transform="rotate(0,   200, 57)"  fill="#8b0000"/>
-          <ellipse cx="311" cy="121" rx="34" ry="16" transform="rotate(60,  311, 121)" fill="#8b0000"/>
-          <ellipse cx="311" cy="249" rx="34" ry="16" transform="rotate(120, 311, 249)" fill="#8b0000"/>
-          <ellipse cx="89"  cy="249" rx="34" ry="16" transform="rotate(240, 89,  249)" fill="#8b0000"/>
-          <ellipse cx="89"  cy="121" rx="34" ry="16" transform="rotate(300, 89,  121)" fill="#8b0000"/>
-          <g transform="rotate(30, 200, 185)">
-            <ellipse cx="200" cy="105" rx="26" ry="12" transform="rotate(0,   200, 105)" fill="#d10000"/>
-            <ellipse cx="269" cy="145" rx="26" ry="12" transform="rotate(60,  269, 145)" fill="#d10000"/>
-            <ellipse cx="200" cy="265" rx="26" ry="12" transform="rotate(180, 200, 265)" fill="#d10000"/>
-            <ellipse cx="131" cy="145" rx="26" ry="12" transform="rotate(300, 131, 145)" fill="#d10000"/>
+          <ellipse cx="200" cy="57"  rx="34" ry="16" transform="rotate(0,200,57)"    fill="#8b0000"/>
+          <ellipse cx="311" cy="121" rx="34" ry="16" transform="rotate(60,311,121)"  fill="#8b0000"/>
+          <ellipse cx="311" cy="249" rx="34" ry="16" transform="rotate(120,311,249)" fill="#8b0000"/>
+          <ellipse cx="89"  cy="249" rx="34" ry="16" transform="rotate(240,89,249)"  fill="#8b0000"/>
+          <ellipse cx="89"  cy="121" rx="34" ry="16" transform="rotate(300,89,121)"  fill="#8b0000"/>
+          <g transform="rotate(30,200,185)">
+            <ellipse cx="200" cy="105" rx="26" ry="12" transform="rotate(0,200,105)"   fill="#d10000"/>
+            <ellipse cx="200" cy="265" rx="26" ry="12" transform="rotate(180,200,265)" fill="#d10000"/>
           </g>
-          <ellipse cx="200" cy="147" rx="18" ry="9" transform="rotate(0,   200, 147)" fill="#8b0000"/>
-          <ellipse cx="233" cy="166" rx="18" ry="9" transform="rotate(60,  233, 166)" fill="#8b0000"/>
-          <ellipse cx="167" cy="166" rx="18" ry="9" transform="rotate(300, 167, 166)" fill="#8b0000"/>
+          <ellipse cx="200" cy="147" rx="18" ry="9" transform="rotate(0,200,147)"   fill="#8b0000"/>
+          <ellipse cx="233" cy="166" rx="18" ry="9" transform="rotate(60,233,166)"  fill="#8b0000"/>
+          <ellipse cx="167" cy="166" rx="18" ry="9" transform="rotate(300,167,166)" fill="#8b0000"/>
         </svg>
         <span>substrate</span>.icu / docs / zkpki
       </div>
@@ -741,7 +646,18 @@
     </div>
   </div>
 </footer>
- 
+
+<script>
+function copyNpm(btn) {
+  navigator.clipboard.writeText('npm install @substrate-icu/sdk').then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M3 11V3.5A1.5 1.5 0 014.5 2H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Copy';
+    }, 2000);
+  });
+}
+</script>
 </body>
 </html>
- 
