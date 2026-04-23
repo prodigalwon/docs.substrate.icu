@@ -11,7 +11,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     *, *::before, *::after { font-family: inherit; }
- 
+
     :root {
       --bg:        #f7f5f2;
       --bg-2:      #f0ede8;
@@ -28,7 +28,7 @@
       --sans:      'DM Sans', system-ui, sans-serif;
       --mono:      'DM Mono', monospace;
     }
- 
+
     html, body {
       background: var(--bg);
       color: var(--text);
@@ -38,11 +38,11 @@
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
- 
+
     h1, h2, h3 { font-family: var(--serif) !important; }
     h4, h5, h6, p, a, li, span, td, th, button, input, code, pre { font-family: var(--sans) !important; }
     code, pre, .mono { font-family: var(--mono) !important; }
- 
+
     /* Nav */
     .site-nav {
       position: fixed;
@@ -63,7 +63,7 @@
     .nav-link-item:hover { color: var(--text-hi); }
     .nav-cta { font-size: 13px; font-weight: 500; color: #fff !important; background: var(--red); padding: 8px 20px; border-radius: 100px; text-decoration: none; transition: background .15s; white-space: nowrap; }
     .nav-cta:hover { background: var(--red-hi); }
- 
+
     /* Layout */
     .docs-layout {
       display: grid;
@@ -71,7 +71,7 @@
       min-height: calc(100vh - 60px);
       margin-top: 60px;
     }
- 
+
     /* Sidebar */
     .sidebar {
       border-right: 1px solid var(--border);
@@ -87,10 +87,10 @@
     .sidebar-list li a { display: block; font-size: 12px; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 4px; transition: background .1s, color .1s; line-height: 1.5; }
     .sidebar-list li a:hover { background: var(--bg-2); color: var(--text-hi); }
     .sidebar-list li a.active { background: var(--red-lo); color: var(--red); font-weight: 500; }
- 
+
     /* Main */
     .docs-main { padding: 48px 56px 100px; max-width: 900px; }
- 
+
     /* Spec header */
     .spec-header {
       padding-bottom: 40px;
@@ -101,13 +101,13 @@
     h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 400; color: var(--text-hi); line-height: 1.1; letter-spacing: -.02em; margin-bottom: 8px; }
     h1 em { font-style: italic; color: var(--red); }
     .spec-subtitle { font-size: 16px; font-weight: 300; color: var(--text-dim); margin-bottom: 28px; }
- 
+
     /* Meta table */
     .meta-table { width: auto; border-collapse: collapse; font-size: 13px; }
     .meta-table td { padding: 7px 16px 7px 0; vertical-align: top; }
     .meta-table td:first-child { font-family: var(--mono) !important; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-dim); white-space: nowrap; padding-right: 24px; }
     .meta-table td:last-child { color: var(--text-hi); font-weight: 500; }
- 
+
     /* Sections */
     .spec-section { margin-bottom: 56px; }
     .section-num { font-family: var(--mono) !important; font-size: 11px; font-weight: 500; letter-spacing: .08em; color: var(--red); margin-bottom: 6px; }
@@ -115,7 +115,7 @@
     h3 { font-size: 17px; font-weight: 400; color: var(--text-hi); letter-spacing: -.01em; margin: 28px 0 12px; }
     p { font-size: 14px; color: var(--text); line-height: 1.78; margin-bottom: 14px; max-width: 720px; }
     p:last-child { margin-bottom: 0; }
- 
+
     /* Spec tables */
     .spec-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0 24px; }
     .spec-table thead tr { background: var(--bg-2); }
@@ -125,44 +125,45 @@
     .spec-table tr:hover td { background: rgba(0,0,0,.015); }
     .spec-table td:first-child { font-family: var(--mono) !important; font-size: 12px; color: var(--text-hi); white-space: nowrap; }
     .spec-table td code { font-family: var(--mono) !important; font-size: 11px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; color: var(--text-hi); white-space: nowrap; }
- 
+
     /* Inline code */
     code { font-family: var(--mono) !important; font-size: .82em; background: var(--bg-2); border: 1px solid var(--border-hi); border-radius: 3px; padding: 1px 6px; color: var(--text-hi); }
- 
+
     /* Callout */
     .callout { background: var(--bg-2); border: 1px solid var(--border-hi); border-left: 3px solid var(--red); border-radius: 0 6px 6px 0; padding: 14px 18px; font-size: 13px; font-weight: 300; color: var(--text); line-height: 1.7; margin: 16px 0; }
     .callout strong { color: var(--text-hi); font-weight: 500; }
     .callout.warn { border-left-color: #d97706; background: rgba(217,119,6,.04); }
- 
+
     /* Pills */
     .pill { display: inline-block; font-family: var(--mono) !important; font-size: 10px; font-weight: 500; letter-spacing: .05em; padding: 2px 8px; border-radius: 100px; }
     .pill.yes { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
     .pill.no { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
     .pill.live { background: rgba(217,119,6,.08); color: #92400e; border: 1px solid rgba(217,119,6,.2); }
     .pill.pending { background: var(--bg-2); color: var(--text-dim); border: 1px solid var(--border); }
- 
+
     /* Lists */
     .spec-list { list-style: none; padding: 0; margin: 12px 0; }
     .spec-list li { font-size: 14px; color: var(--text); padding: 6px 0 6px 16px; border-bottom: 1px solid var(--border); position: relative; line-height: 1.65; }
     .spec-list li:last-child { border-bottom: none; }
     .spec-list li::before { content: '—'; position: absolute; left: 0; color: var(--text-dim); font-size: 12px; }
- 
+
     /* Footer */
     .site-footer { background: var(--bg-2); border-top: 1px solid var(--border); padding: 28px 0; }
     .footer-brand { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-dim); }
     .footer-brand span { color: var(--red); }
     .footer-link { font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color .12s; }
     .footer-link:hover { color: var(--text-hi); }
- 
+
     @media (max-width: 768px) {
       .docs-layout { grid-template-columns: 1fr; }
       .sidebar { display: none; }
       .docs-main { padding: 32px 20px 80px; }
     }
   </style>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20460%22%20width%3D%22400%22%20height%3D%22460%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3CclipPath%20id%3D%22roundClip%22%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22460%22%20rx%3D%2256%22%20ry%3D%2256%22%2F%3E%0A%20%20%20%20%3C%2FclipPath%3E%0A%20%20%20%20%3Cfilter%20id%3D%22eyeglow%22%20x%3D%22-80%25%22%20y%3D%22-80%25%22%20width%3D%22360%25%22%20height%3D%22360%25%22%3E%0A%20%20%20%20%20%20%3CfeGaussianBlur%20stdDeviation%3D%225%22%20result%3D%22blur%22%2F%3E%0A%20%20%20%20%20%20%3CfeMerge%3E%3CfeMergeNode%20in%3D%22blur%22%2F%3E%3CfeMergeNode%20in%3D%22SourceGraphic%22%2F%3E%3C%2FfeMerge%3E%0A%20%20%20%20%3C%2Ffilter%3E%0A%20%20%3C%2Fdefs%3E%0A%0A%20%20%3Crect%20width%3D%22400%22%20height%3D%22460%22%20rx%3D%2256%22%20ry%3D%2256%22%20fill%3D%22%23000000%22%2F%3E%0A%0A%20%20%3Cg%20clip-path%3D%22url%28%23roundClip%29%22%3E%0A%0A%20%20%20%20%3C%21--%20OUTER%20RING%20%E2%80%94%206%20ovals%2C%20no%20bottom%20one%2C%20deep%20wine%20--%3E%0A%20%20%20%20%3C%21--%20We%20skip%20the%20180deg%20bottom%20oval%20intentionally%20--%3E%0A%20%20%20%20%3Cg%20transform%3D%22rotate%280%2C%20200%2C%20185%29%22%3E%0A%20%20%20%20%20%20%3C%21--%20top%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22200%22%20cy%3D%2257%22%20%20rx%3D%2234%22%20ry%3D%2216%22%20transform%3D%22rotate%280%2C%20%20%20200%2C%2057%29%22%20%20fill%3D%22%238b0000%22%2F%3E%0A%20%20%20%20%20%20%3C%21--%20top-right%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22311%22%20cy%3D%22121%22%20rx%3D%2234%22%20ry%3D%2216%22%20transform%3D%22rotate%2860%2C%20%20311%2C%20121%29%22%20fill%3D%22%238b0000%22%2F%3E%0A%20%20%20%20%20%20%3C%21--%20bot-right%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22311%22%20cy%3D%22249%22%20rx%3D%2234%22%20ry%3D%2216%22%20transform%3D%22rotate%28120%2C%20311%2C%20249%29%22%20fill%3D%22%238b0000%22%2F%3E%0A%20%20%20%20%20%20%3C%21--%20bot-left%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2289%22%20%20cy%3D%22249%22%20rx%3D%2234%22%20ry%3D%2216%22%20transform%3D%22rotate%28240%2C%2089%2C%20%20249%29%22%20fill%3D%22%238b0000%22%2F%3E%0A%20%20%20%20%20%20%3C%21--%20top-left%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2289%22%20%20cy%3D%22121%22%20rx%3D%2234%22%20ry%3D%2216%22%20transform%3D%22rotate%28300%2C%2089%2C%20%20121%29%22%20fill%3D%22%238b0000%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%0A%20%20%20%20%3C%21--%20MID%20RING%20%E2%80%94%206%20ovals%2C%20staggered%2030deg%2C%20pure%20red%20--%3E%0A%20%20%20%20%3Cg%20transform%3D%22rotate%2830%2C%20200%2C%20185%29%22%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22200%22%20cy%3D%22105%22%20rx%3D%2226%22%20ry%3D%2212%22%20transform%3D%22rotate%280%2C%20%20%20200%2C%20105%29%22%20fill%3D%22%23d10000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22269%22%20cy%3D%22145%22%20rx%3D%2226%22%20ry%3D%2212%22%20transform%3D%22rotate%2860%2C%20%20269%2C%20145%29%22%20fill%3D%22%23d10000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22269%22%20cy%3D%22225%22%20rx%3D%2226%22%20ry%3D%2212%22%20transform%3D%22rotate%28120%2C%20269%2C%20225%29%22%20fill%3D%22%23d10000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22200%22%20cy%3D%22265%22%20rx%3D%2226%22%20ry%3D%2212%22%20transform%3D%22rotate%28180%2C%20200%2C%20265%29%22%20fill%3D%22%23d10000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22131%22%20cy%3D%22225%22%20rx%3D%2226%22%20ry%3D%2212%22%20transform%3D%22rotate%28240%2C%20131%2C%20225%29%22%20fill%3D%22%23d10000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22131%22%20cy%3D%22145%22%20rx%3D%2226%22%20ry%3D%2212%22%20transform%3D%22rotate%28300%2C%20131%2C%20145%29%22%20fill%3D%22%23d10000%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%0A%20%20%20%20%3C%21--%20INNER%20RING%20%E2%80%94%20top%203%20glowing%20eyes%2C%20bottom%203%20shadow%20--%3E%0A%20%20%20%20%3Cg%20transform%3D%22rotate%280%2C%20200%2C%20185%29%22%3E%0A%20%20%20%20%20%20%3C%21--%20bottom%203%20shadow%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22233%22%20cy%3D%22204%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%28120%2C%20233%2C%20204%29%22%20fill%3D%22%235a0000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22200%22%20cy%3D%22223%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%28180%2C%20200%2C%20223%29%22%20fill%3D%22%235a0000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22167%22%20cy%3D%22204%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%28240%2C%20167%2C%20204%29%22%20fill%3D%22%235a0000%22%2F%3E%0A%0A%20%20%20%20%20%20%3C%21--%20top%203%20glow%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22200%22%20cy%3D%22147%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%280%2C%20%20%20200%2C%20147%29%22%20fill%3D%22%23ff0000%22%20filter%3D%22url%28%23eyeglow%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22233%22%20cy%3D%22166%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%2860%2C%20%20233%2C%20166%29%22%20fill%3D%22%23ff0000%22%20filter%3D%22url%28%23eyeglow%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22167%22%20cy%3D%22166%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%28300%2C%20167%2C%20166%29%22%20fill%3D%22%23ff0000%22%20filter%3D%22url%28%23eyeglow%29%22%2F%3E%0A%0A%20%20%20%20%20%20%3C%21--%20top%203%20white%20hot%20core%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22200%22%20cy%3D%22147%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%280%2C%20%20%20200%2C%20147%29%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22233%22%20cy%3D%22166%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%2860%2C%20%20233%2C%20166%29%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22167%22%20cy%3D%22166%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%28300%2C%20167%2C%20166%29%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%0A%20%20%3C%2Fg%3E%0A%0A%20%20%3C%21--%20Wordmark%20%E2%80%94%20tucked%20up%20close%20--%3E%0A%20%20%3Ctext%0A%20%20%20%20x%3D%22200%22%20y%3D%22340%22%0A%20%20%20%20text-anchor%3D%22middle%22%0A%20%20%20%20font-family%3D%22%27SF%20Pro%20Display%27%2C%20%27Helvetica%20Neue%27%2C%20Helvetica%2C%20sans-serif%22%0A%20%20%20%20font-size%3D%2252%22%0A%20%20%20%20letter-spacing%3D%22-2%22%0A%20%20%20%20fill%3D%22white%22%0A%20%20%3E%3Ctspan%20font-weight%3D%22700%22%3Edot%3C%2Ftspan%3E%3Ctspan%20font-weight%3D%22300%22%3Ewave%3C%2Ftspan%3E%3C%2Ftext%3E%0A%0A%3C%2Fsvg%3E%0A" />
 </head>
 <body>
- 
+
 <!-- Nav -->
 <nav class="site-nav">
   <div class="container-xl">
@@ -203,10 +204,10 @@
     </div>
   </div>
 </nav>
- 
+
 <div class="container-xl px-0">
   <div class="docs-layout">
- 
+
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-section">
@@ -238,10 +239,10 @@
         </ul>
       </div>
     </aside>
- 
+
     <!-- Main content -->
     <main class="docs-main">
- 
+
       <!-- Header -->
       <div class="spec-header">
         <div class="spec-eyebrow">Technical Specification</div>
@@ -253,11 +254,11 @@
           <tr><td>Date</td><td>April 2026</td></tr>
           <tr><td>Implementation</td><td><code>zk-pki-pallet</code> (Substrate FRAME)</td></tr>
           <tr><td>Test Coverage</td><td>267 tests passing (156 pallet + 111 runtime)</td></tr>
-          <tr><td>Hardware Validated</td><td>Samsung S3K250AF, AMD fTPM PRG-RN</td></tr>
+          <tr><td>Hardware Validated</td><td>Samsung S3K250AF, AMD fTPM PRG-RN, dTPM 2.0 (Linux)</td></tr>
           <tr><td>Patent</td><td>US Provisional 64/043,754 — Filed April 19, 2026</td></tr>
         </table>
       </div>
- 
+
       <!-- 1. Abstract -->
       <div class="spec-section" id="abstract">
         <div class="section-num">Section 1</div>
@@ -266,7 +267,7 @@
         <p>The system is distinguished from existing PKI infrastructure by three properties: hardware-anchored Sybil resistance via TPM Endorsement Key deduplication; user-owned certificates as NFTs that issuers cannot burn; and composable trust chains with no universal trust assumption.</p>
         <p>ZK-PKI addresses a gap that existing systems do not close. Worldcoin requires biometric surrender. Traditional PKI requires centralized Certificate Authorities. Token-weighted governance concentrates power in whales. ZK-PKI requires only that the user possess real hardware and pass their device's own biometric check — the biometric never leaves the device.</p>
       </div>
- 
+
       <!-- 2. Motivation -->
       <div class="spec-section" id="motivation">
         <div class="section-num">Section 2</div>
@@ -280,7 +281,7 @@
         <h3>2.3 Why a Substrate Pallet</h3>
         <p>The Polkadot ecosystem lacks a native identity layer that is hardware-anchored, user-owned, and composable. Existing identity solutions either require off-chain trust or centralized issuers. A pallet-native PKI that is verifiable on-chain, hardware-anchored off-chain, and composable by default fills this gap. PNS2 names integrate directly with ZK-PKI certificates — a resolved name can carry proof that a real person controls it.</p>
       </div>
- 
+
       <!-- 3. System Overview -->
       <div class="spec-section" id="overview">
         <div class="section-num">Section 3</div>
@@ -296,11 +297,11 @@
           </tbody>
         </table>
         <div class="callout">Roots are self-registered. There is no application process or approval gate. Trust is earned, not assumed. A newly registered root has minimal reputation and relying parties are not required to trust it.</div>
- 
+
         <h3>3.2 Certificate Ownership Model</h3>
         <p>Certificates in ZK-PKI are NFTs owned by the end user's SS58 address. The issuer who minted the certificate cannot burn it. The issuer can suspend or invalidate the cert's <em>presence in the lookup table</em> — functionally revoking it from a relying party's perspective — but the NFT remains permanently in the user's possession.</p>
         <p>This design separates two concerns that traditional PKI conflates: the credential's existence and the credential's validity. The user always owns proof that a cert was minted. Whether relying parties honor it is a separate question governed by the lookup table state.</p>
- 
+
         <h3>3.3 Attestation Tiers</h3>
         <table class="spec-table">
           <thead><tr><th>Type</th><th>Hardware Required</th><th>PoP Eligible</th></tr></thead>
@@ -312,7 +313,7 @@
         </table>
         <div class="callout warn">Proof of Personhood eligibility requires <code>AttestationType::Tpm</code> combined with the <code>ProofOfPersonhood</code> Extended Key Usage on the issuer template. Apple Secure Enclave devices receive <code>Packed</code> attestation — they can hold certificates but are not eligible for PoP certs. This is an Apple platform constraint.</div>
       </div>
- 
+
       <!-- 4. Certificate Structure -->
       <div class="spec-section" id="cert-structure">
         <div class="section-num">Section 4</div>
@@ -329,10 +330,11 @@
             <tr><td>5</td><td><code>cert_ec_pubkey</code></td><td>DevicePublicKey enum — P-256, P-521, or ML-DSA</td></tr>
             <tr><td>6</td><td><code>expiry_block (u64)</code></td><td>Absolute block number — not a duration</td></tr>
             <tr><td>7</td><td><code>issuer_metadata</code></td><td>Optional immutable issuer-defined metadata</td></tr>
+            <tr><td>8</td><td><code>registration_block (u64)</code></td><td>Block at which the cert was minted. Prevents thumbprint collision when addresses, key, and TTL are reused across root re-registrations.</td></tr>
           </tbody>
         </table>
         <p>Hash function: <code>sp_core::blake2_256</code> — Blake2b variant, 256-bit output. Computed on-chain at mint time via pallet extrinsic. Thumbprint changes on any field modification, invalidating the cert.</p>
- 
+
         <h3>4.2 Hot/Cold Record Split</h3>
         <p>Certificate storage is split into hot and cold records to minimize read cost for the common case. Relying parties read <code>CertRecordHot</code> for validity checks. <code>CertRecordCold</code> is only accessed for signature verification and HIP proof operations.</p>
         <table class="spec-table">
@@ -342,20 +344,21 @@
             <tr><td><code>CertRecordCold</code></td><td>cert_ec_pubkey (DevicePublicKey enum), suspension metadata, issuer_metadata, genesis_fingerprint (GenesisHardwareFingerprint for PoP certs), deposit amount, genesis_os_* fields</td></tr>
           </tbody>
         </table>
- 
+
         <h3>4.3 Certificate State Machine</h3>
-        <p>Certificate state is represented by the <code>CertState</code> enum on the hot record. The five-state machine preserves full history for retroactive validity determination.</p>
+        <p>The on-chain <code>CertState</code> enum has two states: <strong>Active</strong> and <strong>Suspended</strong>. The RPC layer derives two additional states — <strong>Expired</strong> and <strong>Purged</strong> — by comparing the current block against stored expiry and purge indexes. Compromise and Challenge are entity-level states on issuers and roots, not on individual certs, because a compromise event pertains to the issuing entity rather than any specific cert it issued. Relying parties compare <code>mint_block</code> against <code>compromised_at_block</code> to determine cert validity under a compromised entity.</p>
         <table class="spec-table">
           <thead><tr><th>State</th><th>Meaning</th></tr></thead>
           <tbody>
-            <tr><td>Active</td><td>Fully valid and operational. Present in lookup table.</td></tr>
-            <tr><td>Suspended</td><td>Issuer has suspended. Entry remains. NFT remains with user. Subject to 60-day purge if not reactivated.</td></tr>
-            <tr><td>Expired</td><td>TTL exceeded. Flipped by <code>on_initialize</code> at expiry block. Subject to 60-day purge window.</td></tr>
-            <tr><td>Compromised</td><td>Associated root or issuer marked compromised. Relying parties compare <code>mint_block</code> to <code>compromised_at_block</code>.</td></tr>
-            <tr><td>Challenged</td><td>Under active challenge during 45-day contest window.</td></tr>
+            <tr><td>Active</td><td>On-chain state. Fully valid and operational. Present in lookup table.</td></tr>
+            <tr><td>Suspended</td><td>On-chain state. Issuer has suspended. Entry remains. NFT remains with user. Subject to 30-day purge if not reactivated.</td></tr>
+            <tr><td>Expired</td><td>RPC-derived. TTL exceeded — detected by comparing current block to expiry index. Subject to 30-day purge window.</td></tr>
+            <tr><td>Purged</td><td>RPC-derived. Cert records removed after purge window elapsed. NFT remains with user.</td></tr>
+            <tr><td>Compromised</td><td>Entity-level state on issuer or root — not a cert field. Relying parties compare <code>mint_block</code> to entity <code>compromised_at_block</code>.</td></tr>
+            <tr><td>Challenged</td><td>Entity-level state. Root is contesting a compromise flag during the 45-day contest window.</td></tr>
           </tbody>
         </table>
- 
+
         <h3>4.4 Extended Key Usage</h3>
         <table class="spec-table">
           <thead><tr><th>EKU</th><th>Description</th></tr></thead>
@@ -372,9 +375,9 @@
             <tr><td>SmartContractIssuer</td><td>ZK-PKI capability — automated contract issuance</td></tr>
           </tbody>
         </table>
-        <div class="callout">Custom OIDs are assigned IANA Private Enterprise Number assignment (filed April 2026). OID arc: 1.3.6.1.4.1.65612  search-replace when PEN assigned.</div>
+        <div class="callout">IANA Private Enterprise Number assigned: <strong>65612</strong>. OID arc: <code>1.3.6.1.4.1.65612</code>. Mechanical replacement of YOUR_PEN placeholders in <code>primitives/src/oids.rs</code> is deferred — targeted before Kusama deployment.</div>
       </div>
- 
+
       <!-- 5. Attestation -->
       <div class="spec-section" id="attestation">
         <div class="section-num">Section 5</div>
@@ -384,41 +387,41 @@
         <ul class="spec-list">
           <li>Samsung S3K250AF — intermediate hash captured from SM-G986U (Galaxy S20+, Android 13)</li>
           <li>AMD fTPM PRG-RN — intermediate hash captured from AMD Ryzen laptop (Lucy, Windows 11)</li>
+          <li>Discrete TPM 2.0 — intermediate hash captured from Linux laptop (Ubuntu, dTPM)</li>
         </ul>
         <p>The whitelist is hardcoded for Paseo and Kusama testnet. At mainnet the whitelist migrates to an on-chain governance-controlled registry.</p>
- 
+
         <h3>5.2 EK Deduplication</h3>
         <p>The TPM Endorsement Key is a device-unique key burned in at manufacture and present in every TPM attestation statement. ZK-PKI extracts the EK public key from the attestation chain and uses its Blake2b-256 hash as the deduplication key.</p>
-        <p>At mint: the pallet extracts the EK from the attestation chain, computes <code>blake2_256(ek_public)</code>, checks the EK registry for an existing active PoP cert, and rejects the mint if one exists. The EK hash is written to the registry atomically with the cert mint.</p>
+        <p>At mint: the pallet extracts the EK from the attestation chain, computes <code>blake2_256(leaf_spki_der)</code> — the hash of the leaf EK certificate's SubjectPublicKeyInfo DER bytes, checks the EK registry for an existing active PoP cert, and rejects the mint if one exists. The EK hash is written to the registry atomically with the cert mint.</p>
         <p>This mechanism means the cost of a Sybil attack scales with the cost of real hardware. A bot farm that wants N PoP certificates must acquire N physical devices with N distinct Endorsement Keys.</p>
- 
+
         <h3>5.3 Hardware Integrity Proof</h3>
         <p>PoP-eligible certificates at schema version 2 and above require a Hardware Integrity Proof (HIP) on every signing operation. The HIP proves that the signing device is the same device that enrolled, and that its security posture has not degraded since genesis.</p>
-        <p>On Windows TPM 2.0, the HIP is a <code>TPM2_Quote</code> — a TPM-signed assertion over selected PCR values using an Attestation Identity Key. Verification checks:</p>
+        <p>On TPM 2.0 (Windows via TBS and Linux via <code>tpm2-tss</code>), the HIP is a <code>TPM2_Quote</code> — a TPM-signed assertion over selected PCR values using an Attestation Identity Key. Both paths share verification code in <code>zk-pki-hip</code>; the TPM response format is identical across operating systems, only the client-side transport differs. Verification checks:</p>
         <ul class="spec-list">
-          <li><code>blake2_256(ek_public) == genesis.ek_hash</code> — same physical device that enrolled</li>
+          <li><code>blake2_256(leaf_spki_der) == genesis.ek_hash</code> — hash of the leaf EK certificate's SubjectPublicKeyInfo DER bytes matches genesis. This distinguishes individual devices rather than manufacturer roots.</li>
           <li><code>aik_certify_signature</code> valid under EK — AIK was created under EK hierarchy (TPM2_Certify)</li>
           <li><code>quote_signature</code> valid under AIK over SHA-256(TPMS_ATTEST) — correct TPM signing domain</li>
           <li>PCR 7 matches genesis value — Secure Boot state unchanged</li>
-          <li>No regression in OS version or patch levels</li>
         </ul>
         <p>Android StrongBox HIP proof uses a fresh attestation chain with <code>hardwareEnforced</code> RootOfTrust values compared against genesis fingerprint. Implementation pending ceremony tool completion — stubbed in current release.</p>
- 
+
         <h3>5.4 PoP-Asserted Action Pattern</h3>
         <p>Every signing operation from a PoP-certified address carries a <code>PopAssertion</code> alongside the standard Substrate extrinsic signature. The assertion contains a <code>cert_ec_signature</code> over the call data plus a fresh nonce, and optionally a HIP proof.</p>
         <p>The nonce is derived as <code>blake2_256(parent_hash || cert_thumbprint || call_data)</code> — client-computable before submission, unpredictable from the chain's perspective, and bound to the specific call being authorized.</p>
       </div>
- 
+
       <!-- 6. Genesis Flow -->
       <div class="spec-section" id="genesis">
         <div class="section-num">Section 6</div>
         <h2>Genesis Transaction Flow</h2>
         <h3>6.1 Root Registration</h3>
         <p>A root entity registers by calling <code>register_root</code> with a valid hardware attestation payload and a proxy account that already exists in <code>pallet_proxy</code>. The pallet verifies the attestation chain, extracts and registers the EK, and writes the root record.</p>
- 
+
         <h3>6.2 Issuer Issuance</h3>
         <p>A root issues an issuer certificate by calling <code>issue_issuer_cert</code> with the candidate issuer's address and the EKUs to grant. EKU capability inheritance is enforced — an issuer cannot be granted EKUs the root does not itself hold.</p>
- 
+
         <h3>6.3 End User Certificate Mint</h3>
         <ul class="spec-list">
           <li>Issuer creates a certificate template specifying <code>PopRequirement</code>, TTL bounds, maximum cert count, and EKUs</li>
@@ -428,19 +431,19 @@
           <li>Pallet atomically verifies all inputs, computes Blake2b-256 thumbprint, mints NFT, writes <code>CertLookupHot</code> and <code>CertLookupCold</code>, registers EK hash, and distributes fees</li>
           <li>Contract nonce marked consumed atomically — replay impossible</li>
         </ul>
- 
+
         <h3>6.4 Fee Distribution</h3>
         <table class="spec-table">
-          <thead><tr><th>Tier</th><th>Mint Fee</th><th>Protocol (10%)</th><th>Deposit (0.5 DOT)</th><th>Block Creator (40% cap)</th></tr></thead>
+          <thead><tr><th>Tier</th><th>Mint Fee</th><th>Protocol (10%)</th><th>Deposit (5%, min 0.1 DOT)</th><th>Block Creator (40% cap)</th></tr></thead>
           <tbody>
-            <tr><td>Tpm + PoP</td><td>1 DOT</td><td>0.1 DOT</td><td>0.5 DOT</td><td>0.4 DOT</td></tr>
-            <tr><td>Tpm no PoP / Packed</td><td>1.5 DOT</td><td>0.15 DOT</td><td>0.5 DOT</td><td>0.6 DOT + 0.25 to maintainer</td></tr>
-            <tr><td>None</td><td>2 DOT</td><td>0.2 DOT</td><td>0.5 DOT</td><td>0.8 DOT + 0.5 to maintainer</td></tr>
+            <tr><td>Tpm + PoP</td><td>1 DOT</td><td>0.1 DOT</td><td>0.1 DOT</td><td>0.4 DOT</td></tr>
+            <tr><td>Tpm no PoP / Packed</td><td>1.5 DOT</td><td>0.15 DOT</td><td>0.075 DOT</td><td>0.6 DOT + 0.25 to maintainer</td></tr>
+            <tr><td>None</td><td>2 DOT</td><td>0.2 DOT</td><td>0.1 DOT</td><td>0.8 DOT + 0.5 to maintainer</td></tr>
           </tbody>
         </table>
         <div class="callout">PoP certs are cheapest by design. The hardware does the security work. Packed and None tiers carry higher fees reflecting the reduced security guarantees and greater R&D burden for the protocol to handle them safely.</div>
       </div>
- 
+
       <!-- 7. Storage -->
       <div class="spec-section" id="storage">
         <div class="section-num">Section 7</div>
@@ -459,7 +462,7 @@
             <tr><td><code>RootCompromiseRegistry</code></td><td>Write-once. OpenGov-controlled. Records compromised roots.</td></tr>
           </tbody>
         </table>
- 
+
         <h3>7.2 Secondary Indexes</h3>
         <p>Secondary double-maps enable O(1) trie prefix iteration for common query patterns without linear table scans:</p>
         <ul class="spec-list">
@@ -470,27 +473,27 @@
           <li><code>IssuerTemplateNames&lt;issuer &rarr; BoundedVec&lt;n&gt;&gt;</code></li>
           <li><code>TemplateActiveCertCount&lt;(issuer, name) &rarr; u32&gt;</code></li>
         </ul>
- 
+
         <h3>7.3 Pre-Scheduled Expiry and Purge</h3>
         <p>ZK-PKI uses pre-scheduled indexes to achieve O(1) <code>on_initialize</code> operations:</p>
         <ul class="spec-list">
           <li><code>ExpiryIndex&lt;block &rarr; BoundedVec&lt;thumbprint&gt;&gt;</code> — pre-scheduled at mint. <code>on_initialize</code> flips state to Expired at the target block.</li>
           <li><code>PurgeIndex&lt;block &rarr; BoundedVec&lt;thumbprint&gt;&gt;</code> — pre-scheduled at suspension/expiry. <code>on_initialize</code> removes cert records at the purge block.</li>
         </ul>
-        <p>The 60-day inactive purge window (864,000 blocks at 6-second block time) prevents the lookup table from becoming a permanent record of abandoned identities. Anyone can call <code>cleanup</code> on an expired cert past the grace window and receive the full deposit as a bounty — chain hygiene is economically self-sustaining.</p>
+        <p>The 30-day inactive purge window (432,000 blocks at 6-second block time) prevents the lookup table from becoming a permanent record of abandoned identities. This window was tightened from 60 days during red-team remediation to shorten the period an adversary could exploit a stale deposit. Anyone can call <code>cleanup</code> on an expired cert past the grace window and receive the full deposit as a bounty — chain hygiene is economically self-sustaining.</p>
       </div>
- 
+
       <!-- 8. Compromise Handling -->
       <div class="spec-section" id="compromise">
         <div class="section-num">Section 8</div>
         <h2>Compromise Handling</h2>
         <h3>8.1 Issuer Compromise</h3>
         <p>A root invokes <code>invalidate_issuer</code> to flag an issuer as compromised. The issuer's <code>compromised_at_block</code> is recorded as a write-once field. Certs minted before <code>compromised_at_block</code> retain their validity status. Certs minted on or after that block are implicitly compromised.</p>
- 
+
         <h3>8.2 Root Compromise</h3>
         <p>Root compromise is a network-level event requiring OpenGov governance. No single actor — including the root itself — can write to <code>RootCompromiseRegistry</code> directly. The design prevents hearsay attacks where a bad actor falsely marks a legitimate root as compromised.</p>
         <p>Certs minted before the root's <code>compromised_at_block</code> remain in the lookup table. Relying parties compare <code>mint_block</code> to <code>compromised_at_block</code> to determine validity. A root under active challenge during the 45-day contest window remains operational until the challenge resolves.</p>
- 
+
         <h3>8.3 Device Loss and Recovery</h3>
         <p>ZK-PKI provides a two-tier self-discard mechanism:</p>
         <ul class="spec-list">
@@ -498,7 +501,7 @@
           <li><strong>Recovery path (hardware lost):</strong> The user calls <code>self_discard_cert</code> with only their SS58 key and the cert thumbprint. The thumbprint is purged from the lookup table. The recovery event is recorded on-chain as an immutable, timestamped, public attestation that the user has declared their hardware lost. EK registry entry cleared — user can enroll a new device.</li>
         </ul>
       </div>
- 
+
       <!-- 9. JSON-RPC -->
       <div class="spec-section" id="rpc">
         <div class="section-num">Section 9</div>
@@ -517,7 +520,7 @@
           </tbody>
         </table>
       </div>
- 
+
       <!-- 10. FIDO2 -->
       <div class="spec-section" id="fido2">
         <div class="section-num">Section 10</div>
@@ -537,13 +540,13 @@
           </tbody>
         </table>
       </div>
- 
+
       <!-- 11. Extrinsics -->
       <div class="spec-section" id="extrinsics">
         <div class="section-num">Section 11</div>
         <h2>Pallet Extrinsics</h2>
         <p>ZK-PKI exposes 19 extrinsics across three functional groups.</p>
- 
+
         <h3>11.1 Root and Issuer Management</h3>
         <table class="spec-table">
           <thead><tr><th>Extrinsic</th><th>Description</th></tr></thead>
@@ -557,7 +560,7 @@
             <tr><td><code>resolve_challenge</code></td><td>Resolve a pending compromise challenge.</td></tr>
           </tbody>
         </table>
- 
+
         <h3>11.2 Certificate Lifecycle</h3>
         <table class="spec-table">
           <thead><tr><th>Extrinsic</th><th>Description</th></tr></thead>
@@ -570,10 +573,10 @@
             <tr><td><code>self_discard_cert</code></td><td>User discards their own cert. Standard path requires PopAssertion. Recovery path accepts SS58 only.</td></tr>
             <tr><td><code>reissue_cert</code></td><td>Atomic old cert removal and new cert mint. EK registry updated in same execution.</td></tr>
             <tr><td><code>renew_cert</code></td><td>Extend cert validity. TTL must remain within template bounds.</td></tr>
-            <tr><td><code>cleanup</code></td><td>Anyone can reap an expired cert past the 60-day grace window. Full deposit transferred to caller as bounty.</td></tr>
+            <tr><td><code>cleanup</code></td><td>Anyone can reap an expired cert past the 30-day grace window. Full deposit transferred to caller as bounty.</td></tr>
           </tbody>
         </table>
- 
+
         <h3>11.3 Template Management</h3>
         <table class="spec-table">
           <thead><tr><th>Extrinsic</th><th>Description</th></tr></thead>
@@ -584,7 +587,7 @@
           </tbody>
         </table>
       </div>
- 
+
       <!-- 12. Security -->
       <div class="spec-section" id="security">
         <div class="section-num">Section 12</div>
@@ -599,7 +602,7 @@
           <li>Atomic state transitions — no partial updates across all 11 deposit sites</li>
           <li>Hardware integrity continuity — HIP proof required on every PoP cert signing operation</li>
         </ul>
- 
+
         <h3>12.2 Explicit Non-Goals</h3>
         <ul class="spec-list">
           <li>Not a universal trust system — trust is contextual, relying parties set their own thresholds</li>
@@ -609,17 +612,18 @@
           <li>Not key-rotatable — certs are monolithic by design, device loss requires reissuance</li>
           <li>Not a DNS integration — see PNS2 specification</li>
         </ul>
- 
+
         <h3>12.3 Known Limitations</h3>
         <ul class="spec-list">
           <li><strong>Redundant TPMs:</strong> devices with both fTPM and discrete TPM can mint two PoP certs from two different EKs. Mitigated by one-cert-per-device policy at the issuer template level.</li>
           <li><strong>fTPM vs discrete TPM physical security:</strong> AMD fTPM and Intel PTT share silicon with the main CPU. Discrete TPMs (Infineon, STMicro) have stronger isolation guarantees. Both are accepted — relying parties may distinguish via attestation metadata.</li>
           <li><strong>Android StrongBox HIP proof:</strong> implementation pending ceremony tool completion. Stubbed in current release.</li>
-          <li><strong>Weight benchmarks:</strong> placeholder values. Measured values required before Kusama deployment.</li>
-          <li><strong>IANA PEN:</strong> 1.3.6.1.4.1.65612.</li>
+          <li><strong>Weight benchmarks:</strong> 18 of 19 extrinsics carry measured weights from reference hardware (AMD Ryzen 9 5900HX). <code>renew_cert</code> retained as placeholder pending successor-signature bench harness. Full measured weights required before Kusama.</li>
+          <li><strong>OS/patch regression enforcement:</strong> current HIP verification covers PCR 7 (Secure Boot state) and AIK identity match against genesis. Full OS version and patch level regression policy is future work, targeted before Kusama.</li>
+          <li><strong>IANA PEN:</strong> assigned as 65612. OID arc: 1.3.6.1.4.1.65612. Placeholder swap in primitives/src/oids.rs targeted before Kusama.</li>
         </ul>
       </div>
- 
+
       <!-- 13. Implementation Status -->
       <div class="spec-section" id="status">
         <div class="section-num">Section 13</div>
@@ -629,8 +633,9 @@
           <li>All 19 pallet extrinsics implemented and tested</li>
           <li>267 tests passing — 156 pallet workspace + 111 runtime (86 zk-pki-runtime + 25 paseo-runtime)</li>
           <li>no_std verified: zk-pki-pallet, zk-pki-primitives, zk-pki-hip all compile without std</li>
-          <li>Real hardware validation: Samsung S3K250AF (Galaxy S20+) and AMD fTPM PRG-RN (Ryzen laptop)</li>
-          <li>TPM2_Quote HIP proof with correct signing domain (SHA-256(TPMS_ATTEST)) verified against real hardware</li>
+          <li>Real hardware validation: Samsung S3K250AF (Galaxy S20+), AMD fTPM PRG-RN (Ryzen laptop), and discrete TPM 2.0 (Linux laptop)</li>
+          <li>TPM2_Quote HIP proof with correct signing domain (SHA-256(TPMS_ATTEST)) verified against real hardware on both Windows (TBS) and Linux (tpm2-tss)</li>
+          <li>Linux TPM 2.0 HIP path implemented and wired end-to-end: client generates TPM2_Quote against dTPM, pallet verifies against genesis fingerprint in signing extrinsic, failed HIP check rejects the extrinsic</li>
           <li>Fee system with named holds (fungible::MutateHold, HoldReason::CertDeposit)</li>
           <li>Proxy validation wired to pallet_proxy via ValidateProxy trait</li>
           <li>EKU capability inheritance enforced across root to issuer to template</li>
@@ -638,35 +643,36 @@
           <li>Pre-scheduled expiry and purge indexes for O(1) on_initialize</li>
           <li>Hot/cold cert record split for read-optimized relying party queries</li>
           <li>Paseo runtime end-to-end verified with production Config values</li>
+          <li>Weight benchmarks: 18 of 19 extrinsics measured on AMD Ryzen 9 5900HX reference hardware</li>
         </ul>
- 
-        <h3>13.2 Deferred</h3>
+
+        <h3>13.2 Deferred — targeted before Kusama</h3>
+        <div class="callout">The items below are sufficient for Paseo testnet. All are targeted for resolution before Kusama deployment. None affect correctness on the current testnet.</div>
         <ul class="spec-list">
-          <li>Android StrongBox HIP proof ceremony — stubbed, pending Dotwave Android client</li>
-          <li>Linux TPM path — stubbed</li>
-          <li>Weight benchmark measured values — placeholder values sufficient for Paseo, required before Kusama</li>
+          <li>Android StrongBox HIP proof ceremony — stubbed, pending Android client</li>
+          <li>Final <code>renew_cert</code> weight benchmark — placeholder pending successor-signature bench harness</li>
           <li>ink! EK trust chain registry contract — hardcoded whitelist sufficient for Paseo</li>
           <li>Reputation scoring off-chain worker</li>
           <li>NFT integration via pallet-nfts</li>
-          <li>TypeScript SDK</li>
-          <li>IANA PEN OID constants; 65612, search-replace when PEN assigned</li>
+          <li>IANA PEN OID constants — mechanical YOUR_PEN → 65612 replacement in primitives/src/oids.rs</li>
+          <li>Full OS version and patch-level regression enforcement in HIP (current enforcement covers PCR 7 Secure Boot state and AIK identity match)</li>
         </ul>
- 
+
         <h3>13.3 Crate Structure</h3>
         <table class="spec-table">
           <thead><tr><th>Crate</th><th>Contents</th></tr></thead>
           <tbody>
             <tr><td><code>zk-pki-primitives</code></td><td>Shared types, traits, SCALE helpers, no_std. Eku, PopAssertion, HipProof, ValidateProxy, ZkPkiHoldReason, CertTemplate, GenesisHardwareFingerprint.</td></tr>
             <tr><td><code>zk-pki-tpm</code></td><td>TPM attestation parsing, EK extraction, trust chain verification, binding proof. KNOWN_MANUFACTURER_INTERMEDIATES whitelist.</td></tr>
-            <tr><td><code>zk-pki-hip</code></td><td>HIP proof verification, no_std. Tpm2HipVerifier (Windows TPM2_Quote). Android and Linux stubbed.</td></tr>
+            <tr><td><code>zk-pki-hip</code></td><td>HIP proof verification, no_std. Tpm2HipVerifier covers Windows (TBS) and Linux (tpm2-tss). Android StrongBox stubbed.</td></tr>
             <tr><td><code>zk-pki-pallet</code></td><td>All FRAME extrinsics, storage, on_initialize, lookup table, EK registry, TTL, purge, fee distribution, atomic ops. 19 extrinsics.</td></tr>
             <tr><td><code>zk-pki-rpc</code></td><td>JSON-RPC zkpki_ namespace. Off-chain query layer via runtime-api.</td></tr>
             <tr><td><code>zk-pki-runtime</code></td><td>Reference runtime for integration testing. NoopProxyValidator, UnitTestWeight.</td></tr>
-            <tr><td><code>tpm2-hip-probe</code></td><td>Windows-native binary. TBS API via windows-rs. Generates CanonicalHipProof from real TPM hardware.</td></tr>
+            <tr><td><code>tpm2-hip-probe</code></td><td>Native probe binaries. Windows via windows-rs TBS API; Linux via tpm2-tss. Generates CanonicalHipProof from real TPM hardware.</td></tr>
           </tbody>
         </table>
       </div>
- 
+
       <!-- 14. Whitelist Governance -->
       <div class="spec-section" id="whitelist">
         <div class="section-num">Section 14</div>
@@ -682,7 +688,7 @@
           </tbody>
         </table>
       </div>
- 
+
       <!-- 15. References -->
       <div class="spec-section" id="references">
         <div class="section-num">Section 15</div>
@@ -704,11 +710,11 @@
           Patent Pending: US Provisional Application 64/043,754, filed April 19, 2026
         </div>
       </div>
- 
+
     </main>
   </div>
 </div>
- 
+
 <!-- Footer -->
 <footer class="site-footer">
   <div class="container-xl">
@@ -741,7 +747,6 @@
     </div>
   </div>
 </footer>
- 
+
 </body>
 </html>
- 
