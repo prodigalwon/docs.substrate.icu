@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PNS2 Specification — docs.substrate.icu</title>
+  <meta name="description" content="PNS2: Polkadot Naming Service 2.0. Full technical specification covering pallets, DNS record types, economic model, and the Snorkel." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { font-family: inherit; }
+
+    :root {
+      --bg:        #f7f5f2;
+      --bg-2:      #f0ede8;
+      --surface:   #ffffff;
+      --border:    #e2ddd8;
+      --border-hi: #ccc8c2;
+      --text:      #5a5550;
+      --text-dim:  #9e9890;
+      --text-hi:   #1a1714;
+      --red:       #c41010;
+      --red-hi:    #a80d0d;
+      --red-lo:    rgba(196,16,16,.06);
+      --serif:     'Instrument Serif', Georgia, serif;
+      --sans:      'DM Sans', system-ui, sans-serif;
+      --mono:      'DM Mono', monospace;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans) !important;
+      font-size: 15px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3 { font-family: var(--serif) !important; }
+    h4, h5, h6, p, a, li, span, td, th, button, input, code, pre { font-family: var(--sans) !important; }
+    code, pre, .mono { font-family: var(--mono) !important; }
+
+    /* Nav */
+    .site-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(247,245,242,.94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      height: 60px;
+      display: flex;
+      align-items: center;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-wordmark { font-family: var(--sans) !important; font-size: 14px; font-weight: 600; color: var(--text-hi); letter-spacing: -.02em; }
+    .nav-wordmark span { color: var(--red); }
+    .nav-wordmark .dim { color: var(--text-dim); font-weight: 400; }
+    .nav-link-item { font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color .12s; }
+    .nav-link-item:hover { color: var(--text-hi); }
+    .nav-cta { font-size: 13px; font-weight: 500; color: #fff !important; background: var(--red); padding: 8px 20px; border-radius: 100px; text-decoration: none; transition: background .15s; white-space: nowrap; }
+    .nav-cta:hover { background: var(--red-hi); }
+
+    /* Layout */
+    .docs-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 60px);
+      margin-top: 60px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      border-right: 1px solid var(--border);
+      padding: 32px 0;
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
+    }
+    .sidebar-section { margin-bottom: 24px; padding: 0 20px; }
+    .sidebar-heading { font-family: var(--mono) !important; font-size: 10px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; padding: 0 8px; }
+    .sidebar-list { list-style: none; padding: 0; margin: 0; }
+    .sidebar-list li a { display: block; font-size: 12px; color: var(--text); text-decoration: none; padding: 4px 8px; border-radius: 4px; transition: background .1s, color .1s; line-height: 1.5; }
+    .sidebar-list li a:hover { background: var(--bg-2); color: var(--text-hi); }
+    .sidebar-list li a.active { background: var(--red-lo); color: var(--red); font-weight: 500; }
+
+    /* Main */
+    .docs-main { padding: 48px 56px 100px; max-width: 900px; }
+
+    /* Spec header */
+    .spec-header {
+      padding-bottom: 40px;
+      margin-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+    }
+    .spec-eyebrow { font-family: var(--mono) !important; font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+    h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 400; color: var(--text-hi); line-height: 1.1; letter-spacing: -.02em; margin-bottom: 8px; }
+    h1 em { font-style: italic; color: var(--red); }
+    .spec-subtitle { font-size: 16px; font-weight: 300; color: var(--text-dim); margin-bottom: 28px; }
+
+    /* Meta table */
+    .meta-table { width: auto; border-collapse: collapse; font-size: 13px; }
+    .meta-table td { padding: 7px 16px 7px 0; vertical-align: top; }
+    .meta-table td:first-child { font-family: var(--mono) !important; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-dim); white-space: nowrap; padding-right: 24px; }
+    .meta-table td:last-child { color: var(--text-hi); font-weight: 500; }
+
+    /* Sections */
+    .spec-section { margin-bottom: 56px; }
+    .section-num { font-family: var(--mono) !important; font-size: 11px; font-weight: 500; letter-spacing: .08em; color: var(--red); margin-bottom: 6px; }
+    h2 { font-size: clamp(20px, 3vw, 28px); font-weight: 400; color: var(--text-hi); letter-spacing: -.015em; line-height: 1.2; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 17px; font-weight: 400; color: var(--text-hi); letter-spacing: -.01em; margin: 28px 0 12px; }
+    p { font-size: 14px; color: var(--text); line-height: 1.78; margin-bottom: 14px; max-width: 720px; }
+    p:last-child { margin-bottom: 0; }
+
+    /* Spec tables */
+    .spec-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0 24px; }
+    .spec-table thead tr { background: var(--bg-2); }
+    .spec-table th { font-family: var(--mono) !important; font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); text-align: left; padding: 10px 14px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+    .spec-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+    .spec-table tr:last-child td { border-bottom: none; }
+    .spec-table tr:hover td { background: rgba(0,0,0,.015); }
+    .spec-table td:first-child { font-family: var(--mono) !important; font-size: 12px; color: var(--text-hi); white-space: nowrap; }
+    .spec-table td code { font-family: var(--mono) !important; font-size: 11px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; color: var(--text-hi); white-space: nowrap; }
+
+    /* Inline code */
+    code { font-family: var(--mono) !important; font-size: .82em; background: var(--bg-2); border: 1px solid var(--border-hi); border-radius: 3px; padding: 1px 6px; color: var(--text-hi); }
+
+    /* Callout */
+    .callout { background: var(--bg-2); border: 1px solid var(--border-hi); border-left: 3px solid var(--red); border-radius: 0 6px 6px 0; padding: 14px 18px; font-size: 13px; font-weight: 300; color: var(--text); line-height: 1.7; margin: 16px 0; }
+    .callout strong { color: var(--text-hi); font-weight: 500; }
+    .callout.warn { border-left-color: #d97706; background: rgba(217,119,6,.04); }
+
+    /* Pills */
+    .pill { display: inline-block; font-family: var(--mono) !important; font-size: 10px; font-weight: 500; letter-spacing: .05em; padding: 2px 8px; border-radius: 100px; }
+    .pill.yes { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .pill.no { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .pill.live { background: rgba(217,119,6,.08); color: #92400e; border: 1px solid rgba(217,119,6,.2); }
+    .pill.pending { background: var(--bg-2); color: var(--text-dim); border: 1px solid var(--border); }
+
+    /* Lists */
+    .spec-list { list-style: none; padding: 0; margin: 12px 0; }
+    .spec-list li { font-size: 14px; color: var(--text); padding: 6px 0 6px 16px; border-bottom: 1px solid var(--border); position: relative; line-height: 1.65; }
+    .spec-list li:last-child { border-bottom: none; }
+    .spec-list li::before { content: '—'; position: absolute; left: 0; color: var(--text-dim); font-size: 12px; }
+
+    /* Footer */
+    .site-footer { background: var(--bg-2); border-top: 1px solid var(--border); padding: 28px 0; }
+    .footer-brand { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-dim); }
+    .footer-brand span { color: var(--red); }
+    .footer-link { font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color .12s; }
+    .footer-link:hover { color: var(--text-hi); }
+
+    @media (max-width: 768px) {
+      .docs-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .docs-main { padding: 32px 20px 80px; }
+    }
+  </style>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20460%22%20width%3D%22400%22%20height%3D%22460%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3CclipPath%20id%3D%22roundClip%22%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22460%22%20rx%3D%2256%22%20ry%3D%2256%22%2F%3E%0A%20%20%20%20%3C%2FclipPath%3E%0A%20%20%20%20%3Cfilter%20id%3D%22eyeglow%22%20x%3D%22-80%25%22%20y%3D%22-80%25%22%20width%3D%22360%25%22%20height%3D%22360%25%22%3E%0A%20%20%20%20%20%20%3CfeGaussianBlur%20stdDeviation%3D%225%22%20result%3D%22blur%22%2F%3E%0A%20%20%20%20%20%20%3CfeMerge%3E%3CfeMergeNode%20in%3D%22blur%22%2F%3E%3CfeMergeNode%20in%3D%22SourceGraphic%22%2F%3E%3C%2FfeMerge%3E%0A%20%20%20%20%3C%2Ffilter%3E%0A%20%20%3C%2Fdefs%3E%0A%0A%20%20%3Crect%20width%3D%22400%22%20height%3D%22460%22%20rx%3D%2256%22%20ry%3D%2256%22%20fill%3D%22%23000000%22%2F%3E%0A%0A%20%20%3Cg%20clip-path%3D%22url%28%23roundClip%29%22%3E%0A%0A%20%20%20%20%3C%21--%20OUTER%20RING%20%E2%80%94%206%20ovals%2C%20no%20bottom%20one%2C%20deep%20wine%20--%3E%0A%20%20%20%20%3C%21--%20We%20skip%20the%20180deg%20bottom%20oval%20intentionally%20--%3E%0A%20%20%20%20%3Cg%20transform%3D%22rotate%280%2C%20200%2C%20185%29%22%3E%0A%20%20%20%20%20%20%3C%21--%20top%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22200%22%20cy%3D%2257%22%20%20rx%3D%2234%22%20ry%3D%2216%22%20transform%3D%22rotate%280%2C%20%20%20200%2C%2057%29%22%20%20fill%3D%22%238b0000%22%2F%3E%0A%20%20%20%20%20%20%3C%21--%20top-right%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22311%22%20cy%3D%22121%22%20rx%3D%2234%22%20ry%3D%2216%22%20transform%3D%22rotate%2860%2C%20%20311%2C%20121%29%22%20fill%3D%22%238b0000%22%2F%3E%0A%20%20%20%20%20%20%3C%21--%20bot-right%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22311%22%20cy%3D%22249%22%20rx%3D%2234%22%20ry%3D%2216%22%20transform%3D%22rotate%28120%2C%20311%2C%20249%29%22%20fill%3D%22%238b0000%22%2F%3E%0A%20%20%20%20%20%20%3C%21--%20bot-left%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2289%22%20%20cy%3D%22249%22%20rx%3D%2234%22%20ry%3D%2216%22%20transform%3D%22rotate%28240%2C%2089%2C%20%20249%29%22%20fill%3D%22%238b0000%22%2F%3E%0A%20%20%20%20%20%20%3C%21--%20top-left%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%2289%22%20%20cy%3D%22121%22%20rx%3D%2234%22%20ry%3D%2216%22%20transform%3D%22rotate%28300%2C%2089%2C%20%20121%29%22%20fill%3D%22%238b0000%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%0A%20%20%20%20%3C%21--%20MID%20RING%20%E2%80%94%206%20ovals%2C%20staggered%2030deg%2C%20pure%20red%20--%3E%0A%20%20%20%20%3Cg%20transform%3D%22rotate%2830%2C%20200%2C%20185%29%22%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22200%22%20cy%3D%22105%22%20rx%3D%2226%22%20ry%3D%2212%22%20transform%3D%22rotate%280%2C%20%20%20200%2C%20105%29%22%20fill%3D%22%23d10000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22269%22%20cy%3D%22145%22%20rx%3D%2226%22%20ry%3D%2212%22%20transform%3D%22rotate%2860%2C%20%20269%2C%20145%29%22%20fill%3D%22%23d10000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22269%22%20cy%3D%22225%22%20rx%3D%2226%22%20ry%3D%2212%22%20transform%3D%22rotate%28120%2C%20269%2C%20225%29%22%20fill%3D%22%23d10000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22200%22%20cy%3D%22265%22%20rx%3D%2226%22%20ry%3D%2212%22%20transform%3D%22rotate%28180%2C%20200%2C%20265%29%22%20fill%3D%22%23d10000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22131%22%20cy%3D%22225%22%20rx%3D%2226%22%20ry%3D%2212%22%20transform%3D%22rotate%28240%2C%20131%2C%20225%29%22%20fill%3D%22%23d10000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22131%22%20cy%3D%22145%22%20rx%3D%2226%22%20ry%3D%2212%22%20transform%3D%22rotate%28300%2C%20131%2C%20145%29%22%20fill%3D%22%23d10000%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%0A%20%20%20%20%3C%21--%20INNER%20RING%20%E2%80%94%20top%203%20glowing%20eyes%2C%20bottom%203%20shadow%20--%3E%0A%20%20%20%20%3Cg%20transform%3D%22rotate%280%2C%20200%2C%20185%29%22%3E%0A%20%20%20%20%20%20%3C%21--%20bottom%203%20shadow%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22233%22%20cy%3D%22204%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%28120%2C%20233%2C%20204%29%22%20fill%3D%22%235a0000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22200%22%20cy%3D%22223%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%28180%2C%20200%2C%20223%29%22%20fill%3D%22%235a0000%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22167%22%20cy%3D%22204%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%28240%2C%20167%2C%20204%29%22%20fill%3D%22%235a0000%22%2F%3E%0A%0A%20%20%20%20%20%20%3C%21--%20top%203%20glow%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22200%22%20cy%3D%22147%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%280%2C%20%20%20200%2C%20147%29%22%20fill%3D%22%23ff0000%22%20filter%3D%22url%28%23eyeglow%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22233%22%20cy%3D%22166%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%2860%2C%20%20233%2C%20166%29%22%20fill%3D%22%23ff0000%22%20filter%3D%22url%28%23eyeglow%29%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22167%22%20cy%3D%22166%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%28300%2C%20167%2C%20166%29%22%20fill%3D%22%23ff0000%22%20filter%3D%22url%28%23eyeglow%29%22%2F%3E%0A%0A%20%20%20%20%20%20%3C%21--%20top%203%20white%20hot%20core%20--%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22200%22%20cy%3D%22147%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%280%2C%20%20%20200%2C%20147%29%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22233%22%20cy%3D%22166%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%2860%2C%20%20233%2C%20166%29%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%20%20%20%20%3Cellipse%20cx%3D%22167%22%20cy%3D%22166%22%20rx%3D%2218%22%20ry%3D%229%22%20transform%3D%22rotate%28300%2C%20167%2C%20166%29%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%20%20%3C%2Fg%3E%0A%0A%20%20%3C%2Fg%3E%0A%0A%20%20%3C%21--%20Wordmark%20%E2%80%94%20tucked%20up%20close%20--%3E%0A%20%20%3Ctext%0A%20%20%20%20x%3D%22200%22%20y%3D%22340%22%0A%20%20%20%20text-anchor%3D%22middle%22%0A%20%20%20%20font-family%3D%22%27SF%20Pro%20Display%27%2C%20%27Helvetica%20Neue%27%2C%20Helvetica%2C%20sans-serif%22%0A%20%20%20%20font-size%3D%2252%22%0A%20%20%20%20letter-spacing%3D%22-2%22%0A%20%20%20%20fill%3D%22white%22%0A%20%20%3E%3Ctspan%20font-weight%3D%22700%22%3Edot%3C%2Ftspan%3E%3Ctspan%20font-weight%3D%22300%22%3Ewave%3C%2Ftspan%3E%3C%2Ftext%3E%0A%0A%3C%2Fsvg%3E%0A" />
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="site-nav">
+  <div class="container-xl">
+    <div class="d-flex align-items-center justify-content-between">
+      <a class="nav-brand" href="https://docs.substrate.icu">
+        <svg width="24" height="24" viewBox="0 0 400 310" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><filter id="eg" x="-80%" y="-80%" width="360%" height="360%"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <ellipse cx="200" cy="57"  rx="34" ry="16" transform="rotate(0,   200, 57)"  fill="#8b0000"/>
+          <ellipse cx="311" cy="121" rx="34" ry="16" transform="rotate(60,  311, 121)" fill="#8b0000"/>
+          <ellipse cx="311" cy="249" rx="34" ry="16" transform="rotate(120, 311, 249)" fill="#8b0000"/>
+          <ellipse cx="89"  cy="249" rx="34" ry="16" transform="rotate(240, 89,  249)" fill="#8b0000"/>
+          <ellipse cx="89"  cy="121" rx="34" ry="16" transform="rotate(300, 89,  121)" fill="#8b0000"/>
+          <g transform="rotate(30, 200, 185)">
+            <ellipse cx="200" cy="105" rx="26" ry="12" transform="rotate(0,   200, 105)" fill="#d10000"/>
+            <ellipse cx="269" cy="145" rx="26" ry="12" transform="rotate(60,  269, 145)" fill="#d10000"/>
+            <ellipse cx="269" cy="225" rx="26" ry="12" transform="rotate(120, 269, 225)" fill="#d10000"/>
+            <ellipse cx="200" cy="265" rx="26" ry="12" transform="rotate(180, 200, 265)" fill="#d10000"/>
+            <ellipse cx="131" cy="225" rx="26" ry="12" transform="rotate(240, 131, 225)" fill="#d10000"/>
+            <ellipse cx="131" cy="145" rx="26" ry="12" transform="rotate(300, 131, 145)" fill="#d10000"/>
+          </g>
+          <ellipse cx="233" cy="204" rx="18" ry="9" transform="rotate(120, 233, 204)" fill="#5a0000"/>
+          <ellipse cx="200" cy="223" rx="18" ry="9" transform="rotate(180, 200, 223)" fill="#5a0000"/>
+          <ellipse cx="167" cy="204" rx="18" ry="9" transform="rotate(240, 167, 204)" fill="#5a0000"/>
+          <ellipse cx="200" cy="147" rx="18" ry="9" transform="rotate(0,   200, 147)" fill="#cc1111" filter="url(#eg)"/>
+          <ellipse cx="233" cy="166" rx="18" ry="9" transform="rotate(60,  233, 166)" fill="#cc1111" filter="url(#eg)"/>
+          <ellipse cx="167" cy="166" rx="18" ry="9" transform="rotate(300, 167, 166)" fill="#cc1111" filter="url(#eg)"/>
+          <ellipse cx="200" cy="147" rx="18" ry="9" transform="rotate(0,   200, 147)" fill="#8b0000"/>
+          <ellipse cx="233" cy="166" rx="18" ry="9" transform="rotate(60,  233, 166)" fill="#8b0000"/>
+          <ellipse cx="167" cy="166" rx="18" ry="9" transform="rotate(300, 167, 166)" fill="#8b0000"/>
+        </svg>
+        <span class="nav-wordmark"><span>substrate</span>.icu <span class="dim">/ docs / pns2</span></span>
+      </a>
+      <div class="d-flex align-items-center gap-3">
+        <a class="nav-link-item d-none d-md-inline" href="https://substrate.icu">substrate.icu</a>
+        <a class="nav-link-item d-none d-md-inline" href="https://github.com/prodigalwon" target="_blank" rel="noopener">GitHub</a>
+        <a class="nav-cta" href="mailto:apollonius21@proton.me">Get early access</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container-xl px-0">
+  <div class="docs-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-heading">On this page</div>
+        <ul class="sidebar-list">
+          <li><a href="#overview" class="active">1. Overview</a></li>
+          <li><a href="#design">2. Design Goals</a></li>
+          <li><a href="#architecture">3. Architecture</a></li>
+          <li><a href="#naming">4. Naming</a></li>
+          <li><a href="#types">5. Core Types</a></li>
+          <li><a href="#pallets">6. Pallets</a></li>
+          <li><a href="#records">7. DNS Record Types</a></li>
+          <li><a href="#rpc">8. JSON-RPC API</a></li>
+          <li><a href="#runtime-api">9. Runtime API</a></li>
+          <li><a href="#economics">10. Economic Model</a></li>
+          <li><a href="#snorkel">11. The Snorkel</a></li>
+          <li><a href="#invariants">12. Invariants</a></li>
+          <li><a href="#security">13. Security</a></li>
+          <li><a href="#config">14. Reference Config</a></li>
+          <li><a href="#future">15. Future Work</a></li>
+          <li><a href="#filemap">16. File Map</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Related</div>
+        <ul class="sidebar-list">
+          <li><a href="/zkpki/spec">ZK-PKI Specification</a></li>
+          <li><a href="/">Docs home</a></li>
+          <li><a href="https://substrate.icu">substrate.icu</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="docs-main">
+
+      <!-- Header -->
+      <div class="spec-header">
+        <div class="spec-eyebrow">Technical Specification</div>
+        <h1>PNS2</h1>
+        <p class="spec-subtitle">Polkadot Naming Service 2.0<br>Version 2.0 — First formal specification</p>
+        <table class="meta-table">
+          <tr><td>Status</td><td><span class="pill live">Draft / Reference</span></td></tr>
+          <tr><td>Runtime</td><td><code>solochain-template-runtime</code> (pns-node)</td></tr>
+          <tr><td>Preceded by</td><td>PNS 1.0 (cupnfish et al., c. 2021, abandoned)</td></tr>
+          <tr><td>Network</td><td><span class="pill live">Paseo Testnet</span></td></tr>
+          <tr><td>Root domain</td><td><code>*.substrate.icu</code></td></tr>
+        </table>
+      </div>
+
+      <!-- 1. Overview -->
+      <div class="spec-section" id="overview">
+        <div class="section-num">Section 1</div>
+        <h2>Overview</h2>
+        <p>PNS 2.0 is a Substrate-based on-chain naming system that acts as the authoritative zone source for a standards-compliant DNS service. A fronting DNS server (the <strong>Snorkel</strong>) translates chain state into UDP/53 responses using ordinary DNS wire format and ordinary record types. Recursive resolvers, stub resolvers, and existing client libraries interact with PNS names exactly as they would with any traditional DNS zone.</p>
+        <p>What's novel is the zone source: zones live in Substrate storage, edits are extrinsics, and every record is a signed state transition with on-chain economics — registration fees, grace periods, deposit-driven cleanup. What's ordinary is everything downstream: the Snorkel speaks DNS, not anything custom.</p>
+
+        <pre style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:20px;font-size:12px;overflow-x:auto;margin:20px 0;"><code style="background:none;border:none;padding:0;font-size:12px;">          ┌─────────────────┐   ┌─────────────────┐    ┌─────────────────┐
+dig  ───▶│ recursive       │──▶│ snorkel         │◀──▶│ pns-node        │
+stub      │ resolver        │   │ (authoritative  │    │ (Substrate;     │
+          │ (1.1.1.1 etc.)  │   │  server)        │    │  zone source)   │
+          └─────────────────┘   └─────────────────┘    └─────────────────┘
+                        UDP/53            JSON-RPC
+                        DNS wire          (pns_* namespace)
+                        format            + state subscription</code></pre>
+
+        <h3>1.1 Historical Note</h3>
+        <p>An earlier project also called "PNS" was authored by cupnfish and collaborators around 2021, incomplete and abandoned since. <strong>PNS 2.0 is a new ground-up implementation</strong> sharing only the product name and general intent. It does not derive code, types, or storage layouts from that earlier work. This document is the first complete written specification.</p>
+
+        <h3>1.2 Scope</h3>
+        <p>This specification covers: the on-chain data model (names, records, ownership, subdomains, listings); the six FRAME pallets that comprise the runtime; the RPC and runtime API surfaces; the DNS record-type registry; the economic model (registration pricing, fee split, cleanup incentives); and the Snorkel's role as a standards-compliant DNS front-end.</p>
+        <p>Out of scope: internal implementation of the Snorkel's hot path; gateway/reverse-proxy indirection for web content; integration with specific recursive resolvers; wallet UX for name registration flows.</p>
+      </div>
+
+      <!-- 2. Design Goals -->
+      <div class="spec-section" id="design">
+        <div class="section-num">Section 2</div>
+        <h2>Design Goals</h2>
+        <ul class="spec-list">
+          <li><strong>Chain is authoritative.</strong> Every name, every record, every ownership transition is a transparent on-chain fact. No off-chain state.</li>
+          <li><strong>Standards compliance end-user side.</strong> Clients do not need to know PNS exists. <code>dig alice.dot</code> works. <code>nslookup alice.dot</code> works. No custom client protocol.</li>
+          <li><strong>Economically self-sustaining cleanup.</strong> Expired names do not require a privileged purge process. A deposit-based cleanup incentive lets any actor reap expired names and recover the protocol's storage cost.</li>
+          <li><strong>One canonical identity per account.</strong> Each on-chain account holds at most one top-level name; subdomains are the delegation mechanism.</li>
+          <li><strong>Monolithic name binding.</strong> A name binds to its owner's account; ownership transfer rotates records. No in-flight key changes.</li>
+        </ul>
+      </div>
+
+      <!-- 3. Architecture -->
+      <div class="spec-section" id="architecture">
+        <div class="section-num">Section 3</div>
+        <h2>Architecture</h2>
+        <h3>3.1 Three-Layer Model</h3>
+        <table class="spec-table">
+          <thead><tr><th>Layer</th><th>Component</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td>3</td><td>Gateway (optional)</td><td>HTTPS reverse proxy that resolves names via Snorkel and serves CONTENT records (IPFS CID to web content). Out of scope for this spec.</td></tr>
+            <tr><td>2</td><td>Snorkel (DNS server)</td><td>UDP/53 authoritative responses (RFC 1035 wire format). Zones populated from pns-node via <code>pns_*</code> JSON-RPC. Built-in janitor. Rate limiting and merkle-verified cache.</td></tr>
+            <tr><td>1</td><td>pns-node (Substrate solochain)</td><td>PnsRegistrar, PnsResolvers, PnsMarketplace, PnsNft, PnsPriceOracle, PnsRegistry pallets. Authoritative state; all writes are extrinsics.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>3.2 Data Flow — Resolution</h3>
+        <ol class="spec-list" style="list-style:none;">
+          <li>1. Client (<code>dig</code>, browser) queries the Snorkel on UDP/53 for <code>alice.dot IN A</code>.</li>
+          <li>2. Snorkel computes the namehash of <code>alice.dot</code> and issues <code>pns_lookup(namehash, [1])</code> to pns-node.</li>
+          <li>3. pns-node reads <code>Records&lt;T&gt;</code> storage map for that namehash, returns the IPv4 bytes.</li>
+          <li>4. Snorkel formats a standard DNS response and writes it to the UDP socket.</li>
+        </ol>
+
+        <h3>3.3 Data Flow — Registration</h3>
+        <ol class="spec-list" style="list-style:none;">
+          <li>1. User constructs a SCALE-encoded <code>register(name = b"alice", reject_offer = None)</code> extrinsic.</li>
+          <li>2. User signs with their SS58 account and submits via wallet or polkadot-js.</li>
+          <li>3. pns-node validates: label legal, name not reserved, not already owned, caller has no existing canonical name, sufficient balance.</li>
+          <li>4. Registration fee is computed and settled; a 5% cleanup deposit is held on the caller; the NFT mints; <code>NameRegistered</code> event fires.</li>
+          <li>5. Next block, the Snorkel observes the event, refreshes its cached zone; subsequent DNS queries for <code>alice.dot</code> resolve correctly.</li>
+        </ol>
+
+        <h3>3.4 Namespace Structure</h3>
+        <p>Every name in PNS 2.0 resolves under a single base TLD (the "base node"):</p>
+        <ul class="spec-list">
+          <li><code>dot.</code> — canonical PNS 2.0 TLD when built without the <code>kusama</code> feature flag</li>
+          <li><code>ksm.</code> — canonical PNS 2.0 TLD when built with the <code>kusama</code> feature</li>
+        </ul>
+        <p>These constants (<code>DOT_BASENODE</code>, <code>KSM_BASENODE</code>) are defined as pre-computed <code>sp_core::H256</code> values in <code>pallets/pns-types/src/lib.rs</code>. The <code>NATIVE_BASENODE</code> alias selects one at compile time.</p>
+        <p>For the DNS-visible surface: <code>alice</code> registered on-chain is queryable as <code>alice.dot</code>. <code>sally.alice</code> is queryable as <code>sally.alice.dot</code>.</p>
+        <div class="callout">For the substrate.icu deployment, names are visible under <code>*.paseo.substrate.icu</code> on Paseo testnet. The <code>dot.</code> TLD structure applies to the standalone pns-node; the Snorkel bridges these to the substrate.icu zone.</div>
+      </div>
+
+      <!-- 4. Naming -->
+      <div class="spec-section" id="naming">
+        <div class="section-num">Section 4</div>
+        <h2>Naming</h2>
+        <h3>4.1 Labels</h3>
+        <p>A label is one level of the DNS hierarchy (e.g., <code>alice</code> in <code>alice.dot</code>).</p>
+        <table class="spec-table">
+          <thead><tr><th>Rule</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Length</td><td>1–63 bytes</td></tr>
+            <tr><td>Character set</td><td>ASCII alphanumeric (<code>a–z</code>, <code>0–9</code>) after lowercasing</td></tr>
+            <tr><td>Case sensitivity</td><td>None — <code>Alice</code>, <code>alice</code>, and <code>ALICE</code> are the same name</td></tr>
+            <tr><td>Allowed punctuation</td><td>None (no hyphens, no underscores)</td></tr>
+          </tbody>
+        </table>
+        <p>Labels that fail validation are rejected with <code>LabelInvalid</code> or <code>ParseLabelFailed</code> at extrinsic-call time.</p>
+
+        <h3>4.2 Canonical Names and Subdomains</h3>
+        <p>A <strong>canonical name</strong> (top-level registration) is <code>&lt;label&gt;.&lt;base&gt;</code>, e.g., <code>alice.dot</code>. Canonical names are minted by the <code>register</code> extrinsic on PnsRegistrar.</p>
+        <p>A <strong>subdomain</strong> is one level deeper: <code>&lt;sub&gt;.&lt;label&gt;.&lt;base&gt;</code>, e.g., <code>sally.alice.dot</code>. Subdomains are created by delegation from the parent's owner via <code>offer_subdomain</code> → <code>accept_subdomain</code>.</p>
+        <div class="callout warn">Only two levels of hierarchy are supported. <code>foo.bar.alice.dot</code> will fail <code>parse_name_to_node</code>.</div>
+
+        <h3>4.3 Namehash</h3>
+        <p>PNS 2.0 uses the ENS-style recursive Keccak256 namehash:</p>
+        <pre style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px;font-size:12px;overflow-x:auto;margin:12px 0;"><code style="background:none;border:none;padding:0;font-size:12px;">hash_label(L)     = Keccak256(lowercase(L))
+encode(parent, h) = Keccak256(SCALE(parent) || SCALE(h))
+
+namehash("alice")     = encode(BASENODE, hash_label("alice"))
+namehash("sub.alice") = encode(namehash("alice"), hash_label("sub"))</code></pre>
+        <p>All on-chain state keyed by a name uses this 32-byte <code>DomainHash</code> (<code>sp_core::H256</code>). Extrinsics and RPC methods accept plain <code>Vec&lt;u8&gt;</code> label bytes and compute the hash internally — callers do not construct namehashes directly.</p>
+
+        <h3>4.4 Reserved Names</h3>
+        <p>A reserved list blocks registration of certain labels at the protocol level. Genesis reservations include ecosystem-brand terms and first-party product names (approximately 48 entries). The list is managed by two manager-only extrinsics: <code>add_reserved(name)</code> and <code>remove_reserved(name)</code>. Attempting to register a reserved name returns <code>Error::Frozen</code>.</p>
+      </div>
+
+      <!-- 5. Core Types -->
+      <div class="spec-section" id="types">
+        <div class="section-num">Section 5</div>
+        <h2>Core Types</h2>
+
+        <h3>5.1 <code>NameRecord</code></h3>
+        <p>Returned by RPC methods resolving a name. Constructed from on-chain storage; not stored as a unit.</p>
+        <table class="spec-table">
+          <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>owner</code></td><td>AccountId</td><td>Current NFT owner</td></tr>
+            <tr><td><code>expire</code></td><td>Moment</td><td>Expiration (milliseconds since epoch)</td></tr>
+            <tr><td><code>capacity</code></td><td>u32</td><td>Max subdomains under this name</td></tr>
+            <tr><td><code>register_fee</code></td><td>Balance</td><td>Fee paid at last registration/renewal</td></tr>
+            <tr><td><code>for_sale</code></td><td>bool</td><td>Marketplace listing flag</td></tr>
+            <tr><td><code>last_block</code></td><td>u32</td><td>Block of last register/renew</td></tr>
+            <tr><td><code>read_block_number</code></td><td>u32</td><td>Block at which RPC was served (not persisted)</td></tr>
+            <tr><td><code>read_block_hash</code></td><td>DomainHash</td><td>Block hash at which RPC was served (not persisted)</td></tr>
+          </tbody>
+        </table>
+
+        <h3>5.2 <code>SubnameRecord</code></h3>
+        <p>Subdomain delegation entry.</p>
+        <table class="spec-table">
+          <thead><tr><th>Field / Variant</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>parent</code></td><td>DomainHash of the parent canonical name</td></tr>
+            <tr><td><code>label</code></td><td>BoundedVec&lt;u8, 63&gt; — the subdomain label</td></tr>
+            <tr><td><code>target</code></td><td>AccountId of the subdomain recipient</td></tr>
+            <tr><td><code>state: Offered</code></td><td>Parent has offered; target has not accepted</td></tr>
+            <tr><td><code>state: Active</code></td><td>Target accepted; subdomain is live</td></tr>
+            <tr><td><code>state: Rejected</code></td><td>Target rejected; parent can clean up</td></tr>
+          </tbody>
+        </table>
+
+        <h3>5.3 <code>OfferedNameRecord</code></h3>
+        <p>Top-level name purchased as a gift (pending recipient acceptance). While an entry exists in <code>OfferedNames</code>, DNS lookups for the name return null. The recipient has <code>OfferWindow</code> (90 days) to accept; after expiry, the name returns to the free pool.</p>
+      </div>
+
+      <!-- 6. Pallets -->
+      <div class="spec-section" id="pallets">
+        <div class="section-num">Section 6</div>
+        <h2>Pallets</h2>
+        <p>The pns-node runtime hosts six PNS pallets. All indices are permanent and load-bearing for SCALE decoding.</p>
+        <table class="spec-table">
+          <thead><tr><th>Index</th><th>Pallet</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>8</td><td>PnsNft</td><td>ERC-721-style NFT base layer. Token ID = namehash.</td></tr>
+            <tr><td>9</td><td>PnsPriceOracle</td><td>Tiered fee table (label length to price).</td></tr>
+            <tr><td>10</td><td>PnsRegistry</td><td>Ownership accounting + subdomain record-keeping.</td></tr>
+            <tr><td>11</td><td>PnsRegistrar</td><td>Register, renew, transfer, subdomain lifecycle, cleanup.</td></tr>
+            <tr><td>12</td><td>PnsResolvers</td><td>DNS records + text metadata storage.</td></tr>
+            <tr><td>13</td><td>PnsMarketplace</td><td>Atomic name sales + gift offers.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>6.1 PnsRegistrar (index 11)</h3>
+        <table class="spec-table">
+          <thead><tr><th>#</th><th>Extrinsic</th><th>Permission</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td><code>add_reserved(name)</code></td><td>Manager</td><td>Freeze a label against registration.</td></tr>
+            <tr><td>1</td><td><code>remove_reserved(name)</code></td><td>Manager</td><td>Unfreeze a previously-reserved label.</td></tr>
+            <tr><td>2</td><td><code>register(name, reject_offer)</code></td><td>Anyone</td><td>Register a canonical name.</td></tr>
+            <tr><td>3</td><td><code>renew()</code></td><td>Owner</td><td>Extend caller's canonical name. Expiry resets to <code>now + MaxRegistrationDuration</code> — not additive.</td></tr>
+            <tr><td>4</td><td><code>transfer(to)</code></td><td>Owner</td><td>Transfer canonical name to recipient. Cleanup deposit migrates.</td></tr>
+            <tr><td>5</td><td><code>offer_subdomain(label, target)</code></td><td>Parent owner</td><td>Offer a subdomain to <code>target</code>.</td></tr>
+            <tr><td>6</td><td><code>release_name()</code></td><td>Owner</td><td>Burn own canonical name. Must have zero active subdomains.</td></tr>
+            <tr><td>7</td><td><code>accept_subdomain(parent, label)</code></td><td>Target</td><td>Accept an offered subdomain. State → Active.</td></tr>
+            <tr><td>8</td><td><code>reject_subdomain(parent, label)</code></td><td>Target</td><td>Reject an offer. State → Rejected.</td></tr>
+            <tr><td>9</td><td><code>revoke_subdomain(label)</code></td><td>Parent owner</td><td>Delete a subdomain entry in any state.</td></tr>
+            <tr><td>10</td><td><code>release_subdomain(parent, label)</code></td><td>Subdomain holder</td><td>Voluntarily release an active subdomain.</td></tr>
+            <tr><td>11</td><td><code>accept_offered_name(name)</code></td><td>Gift recipient</td><td>Claim a top-level name purchased as a gift.</td></tr>
+            <tr><td>12</td><td><code>cleanup(deadline)</code></td><td>Anyone</td><td>Permissionless janitor: reap up to 5 expired names at <code>deadline</code>; caller receives released cleanup deposits.</td></tr>
+          </tbody>
+        </table>
+
+        <p>Runtime constants:</p>
+        <table class="spec-table">
+          <thead><tr><th>Constant</th><th>Value</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><code>MaxRegistrationDuration</code></td><td>365 days</td><td>TTL set at register/renew</td></tr>
+            <tr><td><code>MinRegistrationDuration</code></td><td>28 days</td><td>Minimum allowed duration</td></tr>
+            <tr><td><code>GracePeriod</code></td><td>30 days</td><td>Post-expiry window; only previous owner may renew</td></tr>
+            <tr><td><code>OfferWindow</code></td><td>90 days</td><td>Time a recipient has to accept a gift-purchased name</td></tr>
+            <tr><td><code>DefaultCapacity</code></td><td>10</td><td>Maximum subdomains per canonical name</td></tr>
+          </tbody>
+        </table>
+
+        <h3>6.2 PnsResolvers (index 12)</h3>
+        <table class="spec-table">
+          <thead><tr><th>#</th><th>Extrinsic</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><code>set_record(name, record_type, content)</code></td><td>Write a DNS record for <code>name</code>. Accepts plain labels or <code>sub.label</code> form.</td></tr>
+            <tr><td>3</td><td><code>set_text(name, kind, content)</code></td><td>Write a text metadata field (Email, Url, Avatar, Twitter, Github, etc.).</td></tr>
+          </tbody>
+        </table>
+        <p>Runtime caps: up to <strong>20 user-settable records</strong> per name; up to <strong>1024 bytes</strong> per record content field. <code>SS58</code> (65280) and <code>ORIGIN</code> (65290) are chain-managed and cannot be set via <code>set_record</code>.</p>
+
+        <h3>6.3 PnsMarketplace (index 13)</h3>
+        <table class="spec-table">
+          <thead><tr><th>#</th><th>Extrinsic</th><th>Permission</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td><code>create_listing(price, expires_at)</code></td><td>Owner</td><td>List name for sale.</td></tr>
+            <tr><td>1</td><td><code>cancel_listing()</code></td><td>Seller</td><td>Cancel own listing; release deposit.</td></tr>
+            <tr><td>2</td><td><code>buy_name(name, recipient)</code></td><td>Any non-seller</td><td>Pay seller's ask + registration fee. Optional <code>recipient</code> makes it a gift.</td></tr>
+            <tr><td>3</td><td><code>cleanup_listing(name)</code></td><td>Anyone</td><td>After listing expiry + grace, permissionless deposit claim.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout">Protocol fee: <code>MarketplaceProtocolFeeBps = 200</code> (2%). On sale, all non-SS58 records are cleared — the new owner does not inherit stale endpoints or public keys from the previous owner.</div>
+
+        <h3>6.4 PnsPriceOracle (index 9)</h3>
+        <p>Genesis pricing (DOT-denominated):</p>
+        <table class="spec-table">
+          <thead><tr><th>Label length</th><th>Registration fee</th></tr></thead>
+          <tbody>
+            <tr><td>1 character</td><td>1000 DOT</td></tr>
+            <tr><td>2 characters</td><td>100 DOT</td></tr>
+            <tr><td>3 characters</td><td>45 DOT</td></tr>
+            <tr><td>4 characters</td><td>25 DOT</td></tr>
+            <tr><td>5 characters</td><td>10 DOT</td></tr>
+            <tr><td>6+ characters</td><td>0.5 DOT</td></tr>
+          </tbody>
+        </table>
+        <p>The same table prices both registration and renewal — there is no renewal discount. Fee computation: <code>idx = (label_len - 1).min(10)</code>; <code>fee = BasePrice[idx]</code>.</p>
+
+        <h3>6.5 PnsRegistry (index 10)</h3>
+        <p>Ownership accounting + subdomain delegation. One public extrinsic: <code>set_official(official)</code> (Manager only) — transfers the base-node NFT (the TLD itself) to a new account for operational handover.</p>
+
+        <h3>6.6 PnsNft (index 8)</h3>
+        <p>ERC-721-style NFT base. Token ID is the 32-byte namehash; class ID <code>0</code> is reserved for PNS names. Not directly called by end users — ownership transfers happen via PnsRegistrar extrinsics that invoke this pallet internally.</p>
+      </div>
+
+      <!-- 7. DNS Record Types -->
+      <div class="spec-section" id="records">
+        <div class="section-num">Section 7</div>
+        <h2>DNS Record Types</h2>
+
+        <h3>7.1 Standard IANA Record Types</h3>
+        <table class="spec-table">
+          <thead><tr><th>Code</th><th>Type</th><th>RFC</th><th>Content</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>A</td><td>RFC 1035</td><td>4-byte IPv4 address</td></tr>
+            <tr><td>5</td><td>CNAME</td><td>RFC 1035</td><td>On-chain alias (pointer to another PNS name)</td></tr>
+            <tr><td>16</td><td>TXT</td><td>RFC 1035</td><td>Free-form text</td></tr>
+            <tr><td>28</td><td>AAAA</td><td>RFC 3596</td><td>16-byte IPv6 address</td></tr>
+          </tbody>
+        </table>
+
+        <h3>7.2 Custom PNS Record Types</h3>
+        <p>Allocated from the IANA private-use range 65280–65292. <code>SS58</code> and <code>ORIGIN</code> are chain-managed.</p>
+        <table class="spec-table">
+          <thead><tr><th>Code</th><th>Name</th><th>Chain-managed</th><th>Content</th></tr></thead>
+          <tbody>
+            <tr><td>65280</td><td>SS58</td><td><span class="pill yes">Yes</span></td><td>Owner's raw SS58 bytes; written on register/transfer/buy</td></tr>
+            <tr><td>65290</td><td>ORIGIN</td><td><span class="pill yes">Yes</span></td><td>32-byte block hash of the original registration block; never modified</td></tr>
+            <tr><td>65281</td><td>RPC</td><td><span class="pill no">No</span></td><td>WebSocket RPC endpoint URL</td></tr>
+            <tr><td>65282</td><td>VALIDATOR</td><td><span class="pill no">No</span></td><td>Polkadot validator stash address</td></tr>
+            <tr><td>65283</td><td>PARA</td><td><span class="pill no">No</span></td><td>Parachain ID</td></tr>
+            <tr><td>65284</td><td>PROXY</td><td><span class="pill no">No</span></td><td>CNAME-equivalent pointer to another name's SS58</td></tr>
+            <tr><td>65285</td><td>PUBKEY1</td><td><span class="pill no">No</span></td><td>Encrypted-messaging public key slot 1 (up to 2048 bytes)</td></tr>
+            <tr><td>65286</td><td>AVATAR</td><td><span class="pill no">No</span></td><td>Avatar IPFS CID</td></tr>
+            <tr><td>65287</td><td>CONTRACT</td><td><span class="pill no">No</span></td><td>Smart contract address — SCALE <code>ContractAddress</code> enum</td></tr>
+            <tr><td>65288</td><td>PUBKEY2</td><td><span class="pill no">No</span></td><td>Public key slot 2</td></tr>
+            <tr><td>65289</td><td>PUBKEY3</td><td><span class="pill no">No</span></td><td>Public key slot 3</td></tr>
+            <tr><td>65291</td><td>IPFS</td><td><span class="pill no">No</span></td><td>TLS certificate public key</td></tr>
+            <tr><td>65292</td><td>CONTENT</td><td><span class="pill no">No</span></td><td>IPFS CID for website / dApp content</td></tr>
+          </tbody>
+        </table>
+        <div class="callout"><code>SS58</code> and <code>ORIGIN</code> are returned on every lookup regardless of the caller's requested type list — always-present proof of current ownership and original registration.</div>
+
+        <h3>7.3 Text Metadata</h3>
+        <p>Stored separately under <code>Texts&lt;T&gt;</code>. Known kinds: <code>Email</code>, <code>Url</code>, <code>Avatar</code>, <code>Description</code>, <code>Notice</code>, <code>Keywords</code>, <code>Twitter</code>, <code>Github</code>, <code>Ipfs</code>. Texts are not cleared on ownership transfer.</p>
+
+        <h3>7.4 Record Lifecycle on Ownership Transfer</h3>
+        <p>When a name changes owner, all non-SS58 and non-ORIGIN records are cleared. This prevents a new owner from inheriting stale technical state: endpoints pointing to the former owner's infrastructure, validator stashes on the old owner's nodes, or public keys tied to the old owner's cryptography. Texts are retained.</p>
+      </div>
+
+      <!-- 8. JSON-RPC -->
+      <div class="spec-section" id="rpc">
+        <div class="section-num">Section 8</div>
+        <h2>JSON-RPC API (<code>pns_*</code> namespace)</h2>
+        <p>Exposed by the node at its HTTP/WS endpoint (default <code>ws://127.0.0.1:9944</code>).</p>
+        <table class="spec-table">
+          <thead><tr><th>Method</th><th>Input</th><th>Output</th></tr></thead>
+          <tbody>
+            <tr><td><code>pns_getInfo</code></td><td>DomainHash</td><td><code>Option&lt;NameRecord&gt;</code></td></tr>
+            <tr><td><code>pns_resolveName</code></td><td>String (plain label, max 128 chars)</td><td><code>Option&lt;NameRecord&gt;</code></td></tr>
+            <tr><td><code>pns_lookup</code></td><td>DomainHash, Vec&lt;u32&gt; (up to 50 type codes)</td><td><code>Vec&lt;(u32, Vec&lt;u8&gt;)&gt;</code></td></tr>
+            <tr><td><code>pns_lookupByName</code></td><td>String (max 128 chars), Vec&lt;u32&gt;</td><td><code>Vec&lt;(u32, Vec&lt;u8&gt;)&gt;</code></td></tr>
+            <tr><td><code>pns_getListing</code></td><td>String (max 128 chars)</td><td><code>Option&lt;ListingInfo&gt;</code></td></tr>
+            <tr><td><code>pns_accountDashboard</code></td><td>AccountId</td><td><code>AccountDashboard</code> (primary name, subnames, offers)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 9. Runtime API -->
+      <div class="spec-section" id="runtime-api">
+        <div class="section-num">Section 9</div>
+        <h2>Runtime API (<code>PnsStorageApi</code>)</h2>
+        <p>Lower-level API exposed to the node's RPC layer via <code>decl_runtime_apis!</code>. The JSON-RPC methods in §8 are thin adapters that invoke these at a specific block, handling input validation, namehash computation, and wrapping outputs with <code>read_block_number</code> / <code>read_block_hash</code> metadata.</p>
+        <table class="spec-table">
+          <thead><tr><th>Method</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>get_info(id)</code></td><td>Resolve a DomainHash to a NameRecord</td></tr>
+            <tr><td><code>lookup(id, record_types)</code></td><td>Fetch specific record types for a namehash (max 3 per runtime API call)</td></tr>
+            <tr><td><code>resolve_name(name)</code></td><td>Resolve a plain name string to a NameRecord</td></tr>
+            <tr><td><code>get_listing(name)</code></td><td>Fetch marketplace listing info for a name</td></tr>
+            <tr><td><code>lookup_by_name(name, record_types)</code></td><td>Fetch specific record types by name string</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 10. Economic Model -->
+      <div class="spec-section" id="economics">
+        <div class="section-num">Section 10</div>
+        <h2>Economic Model</h2>
+
+        <h3>10.1 Fee Distribution — Register / Renew</h3>
+        <table class="spec-table">
+          <thead><tr><th>Share</th><th>Recipient</th><th>Form</th></tr></thead>
+          <tbody>
+            <tr><td>5%</td><td>Registrant</td><td>Held under <code>HoldReason::CleanupDeposit</code>. Refundable via cleanup bounty or release on renew.</td></tr>
+            <tr><td>40%</td><td>Block author</td><td>Transferred to the block author of the containing block (or <code>PnsCustodian</code> if unavailable).</td></tr>
+            <tr><td>55%</td><td>PnsCustodian</td><td>Treasury / protocol account; governance-controlled SS58.</td></tr>
+          </tbody>
+        </table>
+        <div class="callout">The 5% is not a fee — it's a hold on the registrant's balance that becomes the reward for whoever eventually cleans up the expired name. If the registrant renews before expiry, the old hold is released and a new one taken against the renewal fee.</div>
+
+        <h3>10.2 Cleanup — Permissionless Janitor</h3>
+        <p>The <code>PnsRegistrar::cleanup(deadline)</code> extrinsic is the protocol's self-sustaining expiry-reap mechanism. Any account can call it. The caller earns the cleanup deposits held on every expired name they reap.</p>
+        <ul class="spec-list">
+          <li><code>deadline</code> must equal <code>expire + GracePeriod</code> of the names being reaped, and must be <code>&lt;= now</code> or the call errors with <code>NotExpired</code></li>
+          <li>Iterates <code>ExpiryIndex</code> at <code>deadline</code>, taking up to <strong>5 namehashes</strong> per call (bounded weight)</li>
+          <li>For each name: releases 5% hold on original registrant, transfers it to caller, removes <code>OwnerToPrimaryName</code> entry, force-deletes NFT and all subname records, removes from <code>ExpiryIndex</code></li>
+          <li>Emits <code>NamesCleaned { count, caller, payout }</code></li>
+          <li>Deadlines with more than 5 expired names require multiple calls — competitive reaping is expected</li>
+        </ul>
+
+        <h3>10.3 TTL and Grace Period</h3>
+        <p>Every registration expires at <code>mint_time + MaxRegistrationDuration</code> (365 days). Between expiry and <code>expire + GracePeriod</code> (30 days past expiry): DNS lookups return null; only the previous owner can renew; cleanup is not yet callable.</p>
+        <p>After <code>expire + GracePeriod</code>: <code>renew()</code> fails; <code>cleanup(deadline)</code> becomes callable by anyone; the label returns to the free pool.</p>
+
+        <h3>10.4 Marketplace Economics</h3>
+        <ul class="spec-list">
+          <li><strong>Listing deposit:</strong> held on seller while listing is active; released on cancellation, sale, or permissionless <code>cleanup_listing</code></li>
+          <li><strong>Buyer payment on sale:</strong> <code>seller_price + full_registration_fee</code>. The registration fee portion goes through the same 5/40/55 split</li>
+          <li><strong>Protocol fee:</strong> 2% of the seller's asking price; separate from the registration-fee split</li>
+        </ul>
+      </div>
+
+      <!-- 11. The Snorkel -->
+      <div class="spec-section" id="snorkel">
+        <div class="section-num">Section 11</div>
+        <h2>The Snorkel (DNS Server)</h2>
+        <p>The Snorkel is a standards-compliant authoritative DNS server with a chain-aware backend. It speaks UDP/53, uses RFC 1035 wire format, and returns ordinary A/AAAA/CNAME/TXT records. What's different is the zone source: each query translates into <code>pns_*</code> JSON-RPC calls against a pns-node, rather than a zone file.</p>
+
+        <h3>11.1 DNS Compatibility</h3>
+        <table class="spec-table">
+          <thead><tr><th>Feature</th><th>PNS 2.0 / Snorkel</th></tr></thead>
+          <tbody>
+            <tr><td>Wire format</td><td>RFC 1035 binary; no extensions required</td></tr>
+            <tr><td>Transport</td><td>UDP/53 authoritative (TCP fallback for large answers)</td></tr>
+            <tr><td>Record types</td><td>Standard A, AAAA, CNAME, TXT plus custom types in the 65280+ private-use range</td></tr>
+            <tr><td>Response codes</td><td>Standard NOERROR / NXDOMAIN / SERVFAIL / REFUSED</td></tr>
+            <tr><td>TTL</td><td>Derived from grace-period math against a configured maximum</td></tr>
+            <tr><td>Authoritative bit</td><td>Always set; Snorkel is the authoritative server for its configured zones</td></tr>
+          </tbody>
+        </table>
+        <div class="callout">A recursive resolver configured to forward <code>dot.</code> queries to a Snorkel instance does not need any PNS-specific code.</div>
+
+        <h3>11.2 Resolution Hot Path</h3>
+        <ol class="spec-list" style="list-style:none;">
+          <li>1. Parse the DNS request (name + type) from the UDP datagram</li>
+          <li>2. Compute the PNS namehash of the name</li>
+          <li>3. Issue <code>pns_lookup(namehash, [requested_type])</code> to pns-node via JSON-RPC</li>
+          <li>4. Translate returned <code>(RecordType, Bytes)</code> tuples into DNS answer-section records</li>
+          <li>5. Write the response to the socket</li>
+        </ol>
+        <p>The Snorkel caches results (merkle-verified against chain state heads). When <code>NameRegistered</code> / <code>RecordsChanged</code> events are observed on the chain, relevant entries are invalidated.</p>
+
+        <h3>11.3 Hot-Path Properties</h3>
+        <ul class="spec-list">
+          <li><strong>Per-worker geometry:</strong> each CPU core runs an independent request-handling pipeline; no shared mutable state on the hot path</li>
+          <li><strong>Two-process IPC isolation:</strong> the chain-RPC process is separate from the DNS-serving process; a panic in one cannot take down the other</li>
+          <li><strong>Panic-free by construction:</strong> the hot path lints against <code>unwrap</code> / <code>expect</code>; errors return SERVFAIL cleanly</li>
+          <li><strong>Response rate limiting:</strong> a jittered RRL defends against traffic-amplification abuse</li>
+          <li><strong>Merkle-verified cache:</strong> cached entries are authenticated against chain-state roots</li>
+        </ul>
+
+        <h3>11.4 Built-in Janitor</h3>
+        <p>The Snorkel already subscribes to registrar events to keep its cached zones fresh, making it the natural operator of the permissionless cleanup path. Its built-in janitor works as follows:</p>
+        <ul class="spec-list">
+          <li>The chain-state monitor observes names whose <code>expire + GracePeriod</code> has passed</li>
+          <li>The janitor constructs a <code>cleanup(deadline)</code> extrinsic</li>
+          <li>The extrinsic is submitted signed by a configurable "janitor beneficiary" SS58 address — whoever is configured earns the released deposits</li>
+          <li>The Snorkel emits a log record of the cleanup (txhash, reaped count, payout) for operator audit</li>
+        </ul>
+        <div class="callout"><code>cleanup()</code> is permissionless at the pallet level. The Snorkel is one possible caller, not a privileged actor. Anyone can run their own cleanup process. The Snorkel's advantage is that it's already watching the relevant events.</div>
+
+        <h3>11.5 Status</h3>
+        <p>As of this spec version, the Snorkel is in active development. The pns-node side (chain, pallets, RPC, runtime API) is runnable on Paseo testnet. Readers should verify against the Snorkel project's own documentation for current implementation status.</p>
+      </div>
+
+      <!-- 12. Invariants -->
+      <div class="spec-section" id="invariants">
+        <div class="section-num">Section 12</div>
+        <h2>Invariants</h2>
+        <p>Load-bearing rules that every pallet must uphold. Violations are bugs.</p>
+        <ul class="spec-list">
+          <li><strong>One canonical name per account.</strong> <code>OwnerToPrimaryName&lt;T&gt;</code> is 1:1. Enforced at register, transfer, and accept_offered_name.</li>
+          <li><strong>Names are case-insensitive.</strong> Labels are lowercased before Keccak256 hashing; <code>Alice</code> and <code>alice</code> collide to the same namehash.</li>
+          <li><strong>Names are monolithic.</strong> A name's cryptographic identity (namehash) is fixed at registration. No key rotation; no identity mutation.</li>
+          <li><strong>Two-level hierarchy only.</strong> Only one level of subdomain is supported. <code>foo.bar.alice.dot</code> is rejected.</li>
+          <li><strong>Record ownership propagates with NFT.</strong> Only the current NFT owner may set records.</li>
+          <li><strong>SS58 and ORIGIN are protocol-managed.</strong> User-issued <code>set_record</code> on these types fails with <code>Ss58RecordProtected</code>. SS58 rotates on ownership transfer; ORIGIN is write-once at register.</li>
+          <li><strong>Non-SS58 records clear on ownership transfer.</strong> Prevents stale technical state from following a name.</li>
+          <li><strong>Fees and deposits are settled atomically.</strong> The 5/40/55 split is computed and settled in a single extrinsic execution.</li>
+          <li><strong>Cleanup is weight-bounded.</strong> At most 5 names per <code>cleanup()</code> call.</li>
+          <li><strong>Reserved names cannot be registered.</strong> <code>ReservedList&lt;T&gt;</code> consulted at register-time; a match errors with <code>Frozen</code>.</li>
+        </ul>
+      </div>
+
+      <!-- 13. Security -->
+      <div class="spec-section" id="security">
+        <div class="section-num">Section 13</div>
+        <h2>Security Considerations</h2>
+
+        <h3>13.1 Replay and Offer Freshness</h3>
+        <p>Gift offers expire after <code>OfferWindow</code> (90 days). Beyond that window the offer becomes invalid and the name returns to the free pool. Prevents indefinite-pending gift state.</p>
+
+        <h3>13.2 Stale-Entry Cleanup</h3>
+        <p>Auto-cleanup of <code>OwnerToPrimaryName</code> on register prevents accounts from being permanently blocked from re-registering after a prior name's expiry. Full state eviction requires a cleanup call.</p>
+
+        <h3>13.3 Record-Clearing on Transfer</h3>
+        <p>Non-SS58 records are cleared on ownership transfer. New owners do not inherit stale endpoints; relying parties querying the new owner see a clean slate.</p>
+
+        <h3>13.4 Grace-Period Semantics</h3>
+        <p>During grace, DNS lookups return null — the name appears unowned. This is deliberate: relying parties treat names in grace as already-gone, even though the protocol allows the previous owner to renew. Prevents a near-expired name from being treated as live past its lifetime if renewal fails.</p>
+
+        <h3>13.5 Weight-Bounded Operations</h3>
+        <p>Cleanup batches are bounded at 5 names per call. Permissionless callers cannot DoS the chain by staging large reap cohorts. Registration, transfer, and record writes are O(1) in state size.</p>
+
+        <h3>13.6 Reserved List as Brand Protection</h3>
+        <p>The genesis reserved list reserves ecosystem-brand terms (<code>polkadot</code>, <code>kusama</code>, <code>assethub</code>, <code>fellowship</code>, etc.) and first-party product names (<code>snorkel</code>, <code>zkpki</code>, <code>dotwave</code>, etc.) from open registration. Additions and removals go through the manager origin.</p>
+      </div>
+
+      <!-- 14. Reference Config -->
+      <div class="spec-section" id="config">
+        <div class="section-num">Section 14</div>
+        <h2>Reference Runtime Configuration</h2>
+        <table class="spec-table">
+          <thead><tr><th>Parameter</th><th>Value</th><th>Configurable?</th></tr></thead>
+          <tbody>
+            <tr><td>Base TLD</td><td><code>dot.</code> (or <code>ksm.</code>)</td><td>Compile-time feature</td></tr>
+            <tr><td>Registration duration</td><td>365 days</td><td>Runtime constant</td></tr>
+            <tr><td>Grace period</td><td>30 days</td><td>Runtime constant</td></tr>
+            <tr><td>Offer window</td><td>90 days</td><td>Runtime constant</td></tr>
+            <tr><td>Default subdomain capacity</td><td>10</td><td>Runtime constant</td></tr>
+            <tr><td>Label length</td><td>1–63 bytes</td><td>Hardcoded (DNS spec)</td></tr>
+            <tr><td>Label charset</td><td><code>a–z</code>, <code>0–9</code></td><td>Hardcoded</td></tr>
+            <tr><td>Price tiers</td><td>6 distinct tiers, 1–6+ chars</td><td>Runtime storage (manager-set)</td></tr>
+            <tr><td>Marketplace protocol fee</td><td>2.00%</td><td>Runtime constant</td></tr>
+            <tr><td>Cleanup deposit</td><td>5% of registration fee</td><td>Hardcoded logic</td></tr>
+            <tr><td>Block-author share</td><td>40% of registration fee</td><td>Hardcoded logic</td></tr>
+            <tr><td>Custodian share</td><td>55% of registration fee</td><td>Hardcoded logic</td></tr>
+            <tr><td>Max records per name</td><td>20</td><td>Runtime constant</td></tr>
+            <tr><td>Max record content</td><td>1024 bytes</td><td>Runtime constant</td></tr>
+            <tr><td>Cleanup batch</td><td>5 names per call</td><td>Hardcoded logic</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 15. Future Work -->
+      <div class="spec-section" id="future">
+        <div class="section-num">Section 15</div>
+        <h2>Out of Scope / Future Work</h2>
+        <ul class="spec-list">
+          <li><strong>Multi-level subdomains beyond depth 2.</strong> Current <code>parse_name_to_node</code> supports exactly one dot. Arbitrary depth would require recursive parsing and storage model changes.</li>
+          <li><strong>Per-record TTLs.</strong> Currently a single Snorkel-computed TTL per name.</li>
+          <li><strong>DNSSEC signing chains.</strong> The chain provides cryptographic proof of ownership, but Snorkel DNS responses are not currently DNSSEC-signed.</li>
+          <li><strong>Reverse records (PTR).</strong> No current support for reverse IP to name lookup.</li>
+          <li><strong>IDN / punycode.</strong> Labels are ASCII-only. Internationalized names would require punycode normalization before hashing.</li>
+          <li><strong>PQ-secure namehash.</strong> Keccak256 is not post-quantum compromised, but a schema-versioned upgrade path would let a future PQ hash be adopted without breaking existing names.</li>
+          <li><strong>Rent-pricing model.</strong> <code>set_rent_price</code> exists with a zero-valued tier table; future designs could bill ongoing storage rent.</li>
+          <li><strong>Gateway layer.</strong> The reverse-proxy / content-serving layer (Layer 3) is its own project; PNS 2.0 provides the CONTENT record but does not mandate the gateway's implementation.</li>
+        </ul>
+      </div>
+
+      <!-- 16. File Map -->
+      <div class="spec-section" id="filemap">
+        <div class="section-num">Section 16</div>
+        <h2>File Map</h2>
+        <table class="spec-table">
+          <thead><tr><th>Artifact</th><th>File</th></tr></thead>
+          <tbody>
+            <tr><td>Runtime composition, pallet indices</td><td><code>runtime/src/lib.rs</code></td></tr>
+            <tr><td>Pallet configs (constants, origins)</td><td><code>runtime/src/configs/mod.rs</code></td></tr>
+            <tr><td>Genesis reservation list + genesis pricing</td><td><code>runtime/src/genesis_config_presets.rs</code></td></tr>
+            <tr><td>Runtime API definition</td><td><code>pallets/pns-runtime-api/src/lib.rs</code></td></tr>
+            <tr><td>JSON-RPC handlers</td><td><code>node/src/pns_rpc.rs</code></td></tr>
+            <tr><td>Shared types (NameRecord, DomainHash, namehash)</td><td><code>pallets/pns-types/src/lib.rs</code></td></tr>
+            <tr><td>DNS record type enum</td><td><code>pallets/pns-types/src/ddns.rs</code></td></tr>
+            <tr><td>Registrar extrinsics</td><td><code>pallets/pns-registrar/src/registrar.rs</code></td></tr>
+            <tr><td>Resolvers (record storage + lookup)</td><td><code>pallets/pns-resolvers/src/resolvers.rs</code></td></tr>
+            <tr><td>Marketplace</td><td><code>pallets/pns-marketplace/src/lib.rs</code></td></tr>
+            <tr><td>Price oracle</td><td><code>pallets/pns-registrar/src/price_oracle.rs</code></td></tr>
+            <tr><td>Registry (NFT + subdomain state)</td><td><code>pallets/pns-registrar/src/registry.rs</code></td></tr>
+            <tr><td>NFT base</td><td><code>pallets/pns-registrar/src/nft.rs</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="container-xl">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div class="footer-brand">
+        <svg width="16" height="16" viewBox="0 0 400 310" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <ellipse cx="200" cy="57"  rx="34" ry="16" transform="rotate(0,   200, 57)"  fill="#8b0000"/>
+          <ellipse cx="311" cy="121" rx="34" ry="16" transform="rotate(60,  311, 121)" fill="#8b0000"/>
+          <ellipse cx="311" cy="249" rx="34" ry="16" transform="rotate(120, 311, 249)" fill="#8b0000"/>
+          <ellipse cx="89"  cy="249" rx="34" ry="16" transform="rotate(240, 89,  249)" fill="#8b0000"/>
+          <ellipse cx="89"  cy="121" rx="34" ry="16" transform="rotate(300, 89,  121)" fill="#8b0000"/>
+          <g transform="rotate(30, 200, 185)">
+            <ellipse cx="200" cy="105" rx="26" ry="12" transform="rotate(0,   200, 105)" fill="#d10000"/>
+            <ellipse cx="269" cy="145" rx="26" ry="12" transform="rotate(60,  269, 145)" fill="#d10000"/>
+            <ellipse cx="200" cy="265" rx="26" ry="12" transform="rotate(180, 200, 265)" fill="#d10000"/>
+            <ellipse cx="131" cy="145" rx="26" ry="12" transform="rotate(300, 131, 145)" fill="#d10000"/>
+          </g>
+          <ellipse cx="200" cy="147" rx="18" ry="9" transform="rotate(0,   200, 147)" fill="#8b0000"/>
+          <ellipse cx="233" cy="166" rx="18" ry="9" transform="rotate(60,  233, 166)" fill="#8b0000"/>
+          <ellipse cx="167" cy="166" rx="18" ry="9" transform="rotate(300, 167, 166)" fill="#8b0000"/>
+        </svg>
+        <span>substrate</span>.icu / docs / pns2
+      </div>
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <a class="footer-link" href="/">Docs home</a>
+        <a class="footer-link" href="https://substrate.icu">substrate.icu</a>
+        <a class="footer-link" href="https://github.com/prodigalwon" target="_blank" rel="noopener">GitHub</a>
+        <a class="footer-link" href="mailto:apollonius21@proton.me">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
