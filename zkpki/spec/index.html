@@ -254,7 +254,7 @@
           <tr><td>Date</td><td>April 2026</td></tr>
           <tr><td>Implementation</td><td><code>zk-pki-pallet</code> (Substrate FRAME)</td></tr>
           <tr><td>Test Coverage</td><td>267 tests passing (156 pallet + 111 runtime)</td></tr>
-          <tr><td>Hardware Validated</td><td>Samsung S3K250AF, AMD fTPM PRG-RN, dTPM 2.0 (Linux)</td></tr>
+          <tr><td>Hardware Validated</td><td>Samsung S3K250AF, AMD fTPM PRG-RN, STMicro ST33 dTPM (rev 1.38)</td></tr>
           <tr><td>Patent</td><td>US Provisional 64/043,754 — Filed April 19, 2026</td></tr>
         </table>
       </div>
@@ -387,7 +387,7 @@
         <ul class="spec-list">
           <li>Samsung S3K250AF — intermediate hash captured from SM-G986U (Galaxy S20+, Android 13)</li>
           <li>AMD fTPM PRG-RN — intermediate hash captured from AMD Ryzen laptop (Lucy, Windows 11)</li>
-          <li>Discrete TPM 2.0 — intermediate hash captured from Linux laptop (Ubuntu, dTPM)</li>
+          <li>STMicroelectronics ST33 dTPM (Revision 1.38) — intermediate hash captured from Linux laptop (Ubuntu)</li>
         </ul>
         <p>The whitelist is hardcoded for Paseo and Kusama testnet. At mainnet the whitelist migrates to an on-chain governance-controlled registry.</p>
 
@@ -616,7 +616,7 @@
         <h3>12.3 Known Limitations</h3>
         <ul class="spec-list">
           <li><strong>Redundant TPMs:</strong> devices with both fTPM and discrete TPM can mint two PoP certs from two different EKs. Mitigated by one-cert-per-device policy at the issuer template level.</li>
-          <li><strong>fTPM vs discrete TPM physical security:</strong> AMD fTPM and Intel PTT share silicon with the main CPU. Discrete TPMs (Infineon, STMicro) have stronger isolation guarantees. Both are accepted — relying parties may distinguish via attestation metadata.</li>
+          <li><strong>fTPM vs discrete TPM physical security:</strong> AMD fTPM and Intel PTT share silicon with the main CPU. Discrete TPMs (such as STMicro ST33, Infineon SLB) have stronger isolation guarantees. Both are accepted — relying parties may distinguish via attestation metadata.</li>
           <li><strong>Android StrongBox HIP proof:</strong> implementation pending ceremony tool completion. Stubbed in current release.</li>
           <li><strong>Weight benchmarks:</strong> 18 of 19 extrinsics carry measured weights from reference hardware (AMD Ryzen 9 5900HX). <code>renew_cert</code> retained as placeholder pending successor-signature bench harness. Full measured weights required before Kusama.</li>
           <li><strong>OS/patch regression enforcement:</strong> current HIP verification covers PCR 7 (Secure Boot state) and AIK identity match against genesis. Full OS version and patch level regression policy is future work, targeted before Kusama.</li>
@@ -633,7 +633,7 @@
           <li>All 19 pallet extrinsics implemented and tested</li>
           <li>267 tests passing — 156 pallet workspace + 111 runtime (86 zk-pki-runtime + 25 paseo-runtime)</li>
           <li>no_std verified: zk-pki-pallet, zk-pki-primitives, zk-pki-hip all compile without std</li>
-          <li>Real hardware validation: Samsung S3K250AF (Galaxy S20+), AMD fTPM PRG-RN (Ryzen laptop), and discrete TPM 2.0 (Linux laptop)</li>
+          <li>Real hardware validation: Samsung S3K250AF (Galaxy S20+), AMD fTPM PRG-RN (Ryzen laptop), and STMicro ST33 dTPM rev 1.38 (Linux laptop)</li>
           <li>TPM2_Quote HIP proof with correct signing domain (SHA-256(TPMS_ATTEST)) verified against real hardware on both Windows (TBS) and Linux (tpm2-tss)</li>
           <li>Linux TPM 2.0 HIP path implemented and wired end-to-end: client generates TPM2_Quote against dTPM, pallet verifies against genesis fingerprint in signing extrinsic, failed HIP check rejects the extrinsic</li>
           <li>Fee system with named holds (fungible::MutateHold, HoldReason::CertDeposit)</li>
